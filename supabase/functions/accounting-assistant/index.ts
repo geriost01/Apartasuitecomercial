@@ -59,7 +59,7 @@ async function loadContext(service: ReturnType<typeof createClient>) {
     const commission = Math.round((received - refunded) / 5);
     const balanceBeforeGmf = received - refunded - commission - cleaning - supplies - repairs - paid - gmfPaid - channelFees - withheld;
     const positiveBalance = Math.max(0, balanceBeforeGmf);
-    const gmfEstimated = positiveBalance - Math.floor((positiveBalance * 1000 + 499) / 1004);
+    const gmfEstimated = Math.round(positiveBalance * 4 / 1000);
     return { apartment: units.get(Number(apartmentId)) || "Unidad desconocida", month, received, refunded, commission, cleaning, supplies, repairs, paid, channel_fees: channelFees, withheld, gmf_paid: gmfPaid, gmf_estimated: gmfEstimated, balance_before_gmf: balanceBeforeGmf, suggested_balance: positiveBalance - gmfEstimated };
   });
   return {
