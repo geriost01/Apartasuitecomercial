@@ -119,7 +119,7 @@
  .table-scroll table{min-width:640px}
  .table-scroll th,.table-scroll td{font-size:11px;padding:9px 8px}
  .search-box input{font-size:16px;width:min(32vw,150px)}
- .modal-overlay{align-items:center;padding:10px max(10px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ .modal-scrim{align-items:center;padding:10px max(10px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
  .modal-card{width:100%;max-width:540px;max-height:calc(100dvh - 20px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow-y:auto;padding:18px 16px;border-radius:16px}
  .modal-head h2{font-size:19px;line-height:1.25}
  .modal-head p{font-size:12px;line-height:1.45}
