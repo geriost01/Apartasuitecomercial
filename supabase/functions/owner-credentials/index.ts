@@ -12,7 +12,7 @@ const headers = {
 };
 const options = { auth: { persistSession: false, autoRefreshToken: false } };
 const out = (status: number, data: object) => new Response(JSON.stringify(data), {status, headers});
-const tempPassword = () => "Lf!9-" + Array.from(crypto.getRandomValues(new Uint8Array(18)), b=>b.toString(16).padStart(2,"0")).join("");
+const initialPassword = (apartmentLabel: string) => `Suite${apartmentLabel}`;
 
 async function lease(service: ReturnType<typeof createClient>, userId: string) {
   const ticket = crypto.randomUUID();
@@ -77,7 +77,8 @@ Deno.serve(async (request) => {
   // The database constraint stores canonical codes in lowercase with a hyphen.
   const loginCode = "suite-"+apartment.label.toLowerCase();
   const authEmail = "suite-"+apartment.label.toLowerCase()+"@acceso.laflora.invalid";
-  const password = tempPassword();
+  // Match the requested initial credential: username and password are both Suite###.
+  const password = initialPassword(apartment.label);
   if (existing) {
     const ticket = await lease(service,existing.user_id);
     if (!ticket) return out(409,{error:"Ya hay un cambio de contraseña en curso. Intenta de nuevo en un momento."});
