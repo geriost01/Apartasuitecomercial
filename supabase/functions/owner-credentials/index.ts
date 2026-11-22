@@ -73,13 +73,14 @@ Deno.serve(async (request) => {
   const {data:existing,error:lookupError} = await service.from("owner_access").select().eq("apartment_id",apartmentId).maybeSingle();
   if (lookupError) return out(500,{error:"No se pudo consultar el acceso."});
   if (Boolean(existing)!==(body.action==="reset")) return out(409,{error:"El estado del acceso cambió. Actualiza el listado."});
-  const code = "suite-"+apartment.label;
+  const code = "Suite"+apartment.label;
+  const authEmail = "suite-"+apartment.label.toLowerCase()+"@acceso.laflora.invalid";
   const password = tempPassword();
   if (existing) {
     const ticket = await lease(service,existing.user_id);
     if (!ticket) return out(409,{error:"Ya hay un cambio de contraseña en curso. Intenta de nuevo en un momento."});
     try {
-      const {error:lockError} = await service.from("owner_access").update({must_change:true,valid_after:Math.floor(Date.now()/1000)+1})
+      const {error:lockError} = await service.from("owner_access").update({must_change:false,valid_after:Math.floor(Date.now()/1000)+1})
         .eq("user_id",existing.user_id).select("user_id").single();
       if (lockError) return out(409,{error:"No se pudo preparar el acceso. Actualiza el listado."});
       const {error:updateError} = await service.auth.admin.updateUserById(existing.user_id,{password});
@@ -91,12 +92,12 @@ Deno.serve(async (request) => {
   }
 
   const {data:created,error:createError} = await service.auth.admin.createUser({
-    email:code+"@acceso.laflora.invalid", password, email_confirm:true,
+    email:authEmail, password, email_confirm:true,
   });
   if (createError || !created.user) return out(409,{error:"No se pudo crear la cuenta para esta unidad."});
   const userId = created.user.id;
   // Register the password gate before granting any access to the apartment.
-  const {error:accessError} = await service.from("owner_access").insert({apartment_id:apartmentId,user_id:userId,login_code:code});
+  const {error:accessError} = await service.from("owner_access").insert({apartment_id:apartmentId,user_id:userId,login_code:code,must_change:false});
   const linkError = accessError || (await service.from("ownerships").insert({user_id:userId,apartment_id:apartmentId})).error;
   if (linkError) {
     await service.auth.admin.deleteUser(userId);

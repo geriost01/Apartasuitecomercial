@@ -7,7 +7,7 @@ Portal de administración comercial del edificio Aparta Suite La Flora en Cali. 
 - Ocupación en vivo, reservas, huéspedes, noches, tarifas, check-in/check-out y tareas automáticas de aseo.
 - Libro por apartamento para ingresos, comisión del 20 %, aseo, insumos, reparaciones, reembolsos, pagos y GMF 4 × 1.000.
 - Estados de cuenta mensuales PDF con firma y sello oficiales; estadísticas anuales por suite.
-- Creación y restablecimiento de accesos por suite mediante la Edge Function protegida `owner-credentials`.
+- Creación y restablecimiento de accesos por suite mediante la Edge Function protegida `owner-credentials`; los propietarios pueden cambiar la clave desde el portal cuando lo necesiten.
 - Actualizaciones en tiempo real de apartamentos, reservas, libro, aseos y estados de cuenta.
 
 ## Primera cuenta administradora
@@ -19,7 +19,7 @@ select id from auth.users where lower(email) = lower('CORREO_ADMINISTRADORA')
 on conflict do nothing;
 ```
 
-Inicia sesión con el correo y contraseña que creaste. Desde **Copropietarios** puedes generar los accesos por apartamento. La clave temporal se muestra una sola vez y la primera sesión obliga a cambiarla.
+Inicia sesión con el correo y contraseña que creaste. Desde **Copropietarios** puedes generar los accesos por apartamento. La clave temporal se muestra una sola vez; el propietario puede cambiarla desde el portal cuando quiera.
 
 ## Supabase y datos oficiales
 - Proyecto: `la-flora-gestion` (`bxhdpzjezfboyqxjgboy`), URL y clave publicable ya están en `.env.example`; la clave publicable no otorga privilegios por sí sola y las políticas RLS controlan cada lectura.
