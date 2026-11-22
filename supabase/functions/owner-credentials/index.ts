@@ -74,6 +74,8 @@ Deno.serve(async (request) => {
   if (lookupError) return out(500,{error:"No se pudo consultar el acceso."});
   if (Boolean(existing)!==(body.action==="reset")) return out(409,{error:"El estado del acceso cambió. Actualiza el listado."});
   const code = "Suite"+apartment.label;
+  // The database constraint stores canonical codes in lowercase with a hyphen.
+  const loginCode = "suite-"+apartment.label.toLowerCase();
   const authEmail = "suite-"+apartment.label.toLowerCase()+"@acceso.laflora.invalid";
   const password = tempPassword();
   if (existing) {
@@ -97,7 +99,7 @@ Deno.serve(async (request) => {
   if (createError || !created.user) return out(409,{error:"No se pudo crear la cuenta para esta unidad."});
   const userId = created.user.id;
   // Register the password gate before granting any access to the apartment.
-  const {error:accessError} = await service.from("owner_access").insert({apartment_id:apartmentId,user_id:userId,login_code:code,must_change:false});
+  const {error:accessError} = await service.from("owner_access").insert({apartment_id:apartmentId,user_id:userId,login_code:loginCode,must_change:false});
   const linkError = accessError || (await service.from("ownerships").insert({user_id:userId,apartment_id:apartmentId})).error;
   if (linkError) {
     await service.auth.admin.deleteUser(userId);
