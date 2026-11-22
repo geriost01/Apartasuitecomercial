@@ -1,0 +1,3 @@
+[functions.owner-credentials]
+# The function validates the user JWT itself and also supports first-password changes.
+verify_jwt = false
