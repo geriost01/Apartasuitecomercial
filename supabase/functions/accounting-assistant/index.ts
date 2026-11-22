@@ -57,9 +57,21 @@ async function loadContext(service: ReturnType<typeof createClient>) {
 
 function parseModelJson(content: string) {
   const cleaned = content.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  const value = JSON.parse(cleaned);
-  if (typeof value.reply !== "string") throw new Error("Respuesta incompleta.");
-  return { reply: value.reply.slice(0, 5000), draft: value.draft && typeof value.draft === "object" ? value.draft : null };
+  let value: any;
+  try {
+    value = JSON.parse(cleaned);
+  } catch {
+    const start = cleaned.indexOf("{");
+    const end = cleaned.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      try { value = JSON.parse(cleaned.slice(start, end + 1)); } catch { /* use plain text below */ }
+    }
+  }
+  if (value && typeof value.reply === "string")
+    return { reply: value.reply.slice(0, 5000), draft: value.draft && typeof value.draft === "object" ? value.draft : null };
+  // Some model endpoints ignore the JSON-only instruction. Keep the answer useful
+  // instead of turning otherwise valid prose into an Edge Function 502.
+  return { reply: cleaned.slice(0, 5000) || "No recibí una respuesta utilizable. Intenta de nuevo.", draft: null };
 }
 
 async function commitDraft(service: ReturnType<typeof createClient>, draft: any) {
@@ -124,15 +136,16 @@ Deno.serve(async (request) => {
     const response = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${nvidiaKey}`, "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], temperature: 0.2, max_tokens: 1400, stream: false }),
+      body: JSON.stringify({ model, messages: [{ role: "system", content: system }, ...messages], temperature: 0.2, max_tokens: 1400, response_format: { type: "json_object" }, chat_template_kwargs: { enable_thinking: false }, stream: false }),
     });
-    if (!response.ok) return out(response.status === 429 || response.status === 402 ? 503 : 502, { error: response.status === 429 ? "El endpoint gratuito está ocupado; espera un momento y vuelve a intentar." : response.status === 402 ? "El endpoint no tiene cuota disponible ahora. Revisa el límite de la cuenta NVIDIA." : "El proveedor de IA no respondió correctamente." });
+    if (!response.ok) return out(response.status === 429 || response.status === 402 ? 503 : 502, { error: response.status === 401 || response.status === 403 ? "NVIDIA rechazó la API key. Revisa que sea una clave activa de NVIDIA Build." : response.status === 404 ? "El modelo configurado no está disponible en NVIDIA Build." : response.status === 429 ? "El endpoint gratuito está ocupado; espera un momento y vuelve a intentar." : response.status === 402 ? "El endpoint no tiene cuota disponible ahora. Revisa el límite de la cuenta NVIDIA." : "El proveedor de IA no respondió correctamente." });
     const result = await response.json();
     const content = result?.choices?.[0]?.message?.content;
     if (typeof content !== "string") return out(502, { error: "El proveedor devolvió una respuesta vacía." });
     return out(200, parseModelJson(content));
   } catch (error) {
-    console.error("accounting-assistant error", error);
-    return out(502, { error: "No pude consultar la información en este momento. Intenta de nuevo." });
+    const errorName = error instanceof Error ? error.name : "Error";
+    console.error("accounting-assistant error type", errorName);
+    return out(502, { error: `Falló una operación interna (${errorName}). Intenta de nuevo.` });
   }
 });
