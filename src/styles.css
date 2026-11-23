@@ -115,6 +115,22 @@ html[data-theme="violet"] .accounting-chat,html[data-theme="violet"] .accounting
 html[data-theme="violet"] .accounting-chat-messages{background:#1c1a21}
 html[data-theme="violet"] .accounting-chat-disclosure,html[data-theme="violet"] .muted,html[data-theme="violet"] .settings-hint{color:#b9b1c4}
 html[data-theme="violet"] th,html[data-theme="violet"] td,html[data-theme="violet"] .request-reply{border-color:#3b3545;color:#e6e0ed}
+/* Superficies claras de los componentes también deben conservar contraste en modo violeta. */
+html[data-theme="violet"] .unit-tile{background:#302b37;border-color:#4a4353;color:#eee9f7}
+html[data-theme="violet"] .unit-tile:hover{border-color:#a985e8}
+html[data-theme="violet"] .unit-occupied{background:#3b304b;border-color:#5a4774}
+html[data-theme="violet"] .unit-occupancy,html[data-theme="violet"] .unit-legend{color:#c4bdce}
+html[data-theme="violet"] .unit-legend{border-color:#3b3545}
+html[data-theme="violet"] .unit-occupancy i,html[data-theme="violet"] .status-free i{background:#b8afc4}
+html[data-theme="violet"] .count-chip{background:#382f43;color:#d9ccff}
+html[data-theme="violet"] .today-note,html[data-theme="violet"] .settlement-note{background:#302d35;border-color:#49424f;color:#d9d2e3}
+html[data-theme="violet"] .today-note span,html[data-theme="violet"] .settlement-note small{color:#c4bdce}
+html[data-theme="violet"] .today-note b,html[data-theme="violet"] .settlement-note b{color:#f0edf5}
+html[data-theme="violet"] .empty-state{color:#c4bdce}
+html[data-theme="violet"] .empty-state>span{background:#352f3c;color:#c3a5fa}
+html[data-theme="violet"] .empty-state b{color:#e6e0ed}
+html[data-theme="violet"] .empty-state p{color:#b9b1c4}
+html[data-theme="violet"] .status-free{background:#35333a;color:#d2cadb}
 @media(max-width:760px){html[data-theme="violet"] .login-page{background:linear-gradient(160deg,#17141c 0%,#38264f 34%,#1c1a21 34%,#1c1a21 100%)}html[data-theme="violet"] .login-aside{background:linear-gradient(135deg,#211a2c,#49336a 70%,#7049a6)}}
 
 /* Mobile: compacta el portal y evita el zoom automático de Safari al enfocar campos. */
