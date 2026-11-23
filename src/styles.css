@@ -113,6 +113,48 @@ html[data-theme="violet"] .login-form h2,html[data-theme="violet"] .login-form l
 html[data-theme="violet"] .login-form input,html[data-theme="violet"] .field-label input,html[data-theme="violet"] .field-label select,html[data-theme="violet"] .field-label textarea,html[data-theme="violet"] .accounting-chat-form textarea{background:#1e1b24;border-color:#494151;color:#f0edf5}
 html[data-theme="violet"] .accounting-chat,html[data-theme="violet"] .accounting-chat-head,html[data-theme="violet"] .accounting-chat-form{background:#26232d;border-color:#3b3545;color:#f0edf5}
 html[data-theme="violet"] .accounting-chat-messages{background:#1c1a21}
+
+/* Agenda ejecutiva para que administración vea primero lo que requiere acción. */
+.daily-ops-panel{margin-top:14px;padding:20px 22px;background:linear-gradient(125deg,#fff 0%,#fbfcf9 72%,#f0f5ef 100%)}
+.daily-ops-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:15px}
+.daily-ops-heading .eyebrow{margin:0 0 5px;color:#78907b;font-size:8px;letter-spacing:1px}
+.daily-ops-heading h2{margin:0;color:#2f3a33;font-family:var(--serif);font-size:19px;letter-spacing:-.45px}
+.daily-ops-heading>div>p:last-child{margin:5px 0 0;color:#888d83;font-size:10px}
+.daily-status{border-radius:20px;padding:7px 10px;font-size:9px;font-weight:700;white-space:nowrap}
+.daily-needs-attention{background:#fbf0e6;color:#9b653e}
+.daily-all-clear{background:#eaf3e9;color:#527658}
+.daily-ops-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.daily-action{min-width:0;min-height:67px;display:flex;align-items:center;gap:9px;text-align:left;padding:10px;border:1px solid #eeefe9;border-radius:9px;background:#fff;color:#414a41;transition:transform .16s,border-color .16s,box-shadow .16s}
+.daily-action:hover{transform:translateY(-1px);border-color:#cad9cb;box-shadow:0 5px 16px #263d2b0d}
+.daily-action-icon{width:30px;height:30px;display:grid;place-items:center;flex:none;border-radius:9px;background:#edf3ed;color:#5c7a62}
+.daily-action-copy{min-width:0;flex:1}
+.daily-action-copy b,.daily-action-copy small{display:block}
+.daily-action-copy b{font-size:9px;color:#454c44}
+.daily-action-copy small{margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;color:#8a8f86}
+.daily-action>strong{min-width:19px;text-align:center;font-size:14px;color:#93978f}
+.daily-action>strong.daily-count-active{color:#ad734c}
+.daily-action-arrow{flex:none;color:#9ba297}
+.turnover-alert{display:flex;align-items:center;gap:9px;margin:0 0 12px;padding:10px 12px;border:1px solid #eddfc9;border-radius:8px;background:#fbf5e9;color:#80653d;font-size:10px;line-height:1.45}
+.turnover-alert svg{flex:none;color:#b18a4d}
+.turnover-alert b{color:#70542d}
+html[data-theme="violet"] .daily-ops-panel{background:linear-gradient(125deg,#26232d 0%,#26232d 70%,#30263f 100%);border-color:#3b3545}
+html[data-theme="violet"] .daily-ops-heading h2{color:#f2edf8}
+html[data-theme="violet"] .daily-ops-heading .eyebrow{color:#c3a5fa}
+html[data-theme="violet"] .daily-ops-heading>div>p:last-child{color:#b9b1c4}
+html[data-theme="violet"] .daily-action{background:#211e28;border-color:#413949;color:#f0edf5}
+html[data-theme="violet"] .daily-action:hover{border-color:#755b98;box-shadow:0 5px 16px #09070d55}
+html[data-theme="violet"] .daily-action-icon{background:#382c4b;color:#c3a5fa}
+html[data-theme="violet"] .daily-action-copy b{color:#f0edf5}
+html[data-theme="violet"] .daily-action-copy small{color:#b9b1c4}
+html[data-theme="violet"] .daily-action>strong{color:#a69cad}
+html[data-theme="violet"] .daily-action>strong.daily-count-active{color:#e2b98e}
+html[data-theme="violet"] .daily-action-arrow{color:#aaa0b8}
+html[data-theme="violet"] .daily-needs-attention{background:#493526;color:#f0c89d}
+html[data-theme="violet"] .daily-all-clear{background:#2d3a32;color:#b6d6bd}
+html[data-theme="violet"] .turnover-alert{background:#382f25;border-color:#66523a;color:#ead2ad}
+html[data-theme="violet"] .turnover-alert b{color:#f0d9b5}
+@media(max-width:900px){.daily-ops-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.daily-ops-panel{margin-top:10px;padding:15px 13px}.daily-ops-heading{margin-bottom:12px}.daily-ops-heading h2{font-size:16px}.daily-ops-heading>div>p:last-child{font-size:9px}.daily-ops-grid{gap:7px}.daily-action{min-height:64px;gap:7px;padding:8px}.daily-action-icon{width:27px;height:27px}.daily-action-copy b{font-size:8px}.daily-action-copy small{font-size:7px}.daily-action>strong{font-size:13px}.daily-action-arrow{display:none}.turnover-alert{align-items:flex-start;font-size:9px}}
 html[data-theme="violet"] .accounting-chat-disclosure,html[data-theme="violet"] .muted,html[data-theme="violet"] .settings-hint{color:#b9b1c4}
 html[data-theme="violet"] th,html[data-theme="violet"] td,html[data-theme="violet"] .request-reply{border-color:#3b3545;color:#e6e0ed}
 /* Superficies claras de los componentes también deben conservar contraste en modo violeta. */
