@@ -85,38 +85,6 @@
 .password-visibility{position:absolute;top:50%;right:5px;transform:translateY(-50%);width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#72786f}
 .password-visibility:hover{background:#f0f3ed;color:#315749}
 .password-visibility:focus-visible{outline:3px solid #c9d9ce;outline-offset:0}
-html[data-theme="violet"]{--green:#7049a6;--green-deep:#593987;--green-soft:#f0eafb;--gold:#9a78c2;--bg:#f8f6fb}
-html[data-theme="violet"] body{background:#f8f6fb;color:#332b3c}
-html[data-theme="violet"] .sidebar{background:#fbf9fe;border-color:#eee8f5}
-html[data-theme="violet"] .main-content{background:#f8f6fb}
-html[data-theme="violet"] .topbar{border-color:#eee8f5}
-html[data-theme="violet"] .brand-lockup{color:#593987}
-html[data-theme="violet"] .brand-mark,html[data-theme="violet"] .avatar,html[data-theme="violet"] .tiny-avatar,html[data-theme="violet"] .guest-avatar{background:#eee7f8;color:#7049a6}
-html[data-theme="violet"] .nav-link:hover{background:#f2ecfa;color:#593987}
-html[data-theme="violet"] .nav-active{background:#f0eafb;color:#593987}
-html[data-theme="violet"] .nav-active:before{background:#805bb2}
-html[data-theme="violet"] .nav-count,html[data-theme="violet"] .count-chip{background:#f2ecfa;color:#7049a6}
-html[data-theme="violet"] .primary-btn{background:#7049a6;box-shadow:0 3px 7px #7049a61c}
-html[data-theme="violet"] .primary-btn:hover{background:#593987}
-html[data-theme="violet"] .secondary-btn{color:#593987}
-html[data-theme="violet"] .live-pill{background:#faf7ff;border-color:#e9e0f5;color:#7049a6}
-html[data-theme="violet"] .live-pill i{background:#8d6cba;box-shadow:0 0 0 3px #eee7f8}
-html[data-theme="violet"] .feature-metric{background:#f1ecf8}
-html[data-theme="violet"] .feature-metric>strong{color:#7049a6}
-html[data-theme="violet"] .meter i{background:#8d6cba}
-html[data-theme="violet"] .unit-occupied{background:#f4effa;border-color:#e9e0f5}
-html[data-theme="violet"] .unit-num{color:#674493}
-html[data-theme="violet"] .support-card{background:#f3eff8;border-color:#ebe3f3}
-html[data-theme="violet"] .support-icon,.theme-toggle[aria-label="Cambiar al tema verde"]{background:#eee7f8;color:#7049a6}
-html[data-theme="violet"] .login-page{background-color:#faf8fd}
-html[data-theme="violet"] .login-aside{background:#f0eafb}
-html[data-theme="violet"] .login-aside:before,html[data-theme="violet"] .login-aside:after{border-color:#dfd2ef}
-html[data-theme="violet"] .stat-orb{background:#e5daf3;color:#7049a6}
-html[data-theme="violet"] .login-form input:focus{border-color:#a88acb;box-shadow:0 0 0 3px #f0eafb}
-html[data-theme="violet"] button:focus-visible,html[data-theme="violet"] input:focus-visible,html[data-theme="violet"] select:focus-visible,html[data-theme="violet"] textarea:focus-visible{outline-color:#d7c5ed}
-html[data-theme="violet"] .accounting-chat-launcher{background:#7049a6}
-html[data-theme="violet"] .accounting-chat-avatar{background:#eee7f8;color:#7049a6}
-@media(max-width:760px){html[data-theme="violet"] .login-page{background:linear-gradient(160deg,#49336a 0%,#7956a7 31%,#f0eafb 31%,#f8f6fb 100%)}html[data-theme="violet"] .login-aside{background:linear-gradient(135deg,#49336a 0%,#674493 58%,#9473b9 100%)}}
 @media(max-width:760px){.theme-toggle{min-width:38px;min-height:38px;padding:0 9px}.topbar .theme-toggle span{display:none}.theme-toggle-login{min-height:42px;padding:0 12px}.password-visibility{width:42px;height:42px}}
 
 /* Mobile: compacta el portal y evita el zoom automático de Safari al enfocar campos. */
