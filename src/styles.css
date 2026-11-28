@@ -685,6 +685,8 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 @media(max-width:560px){.apartment-management-control{display:block}.apartment-management-selected{margin-top:12px;align-items:stretch;flex-direction:column;gap:10px}.apartment-management-selected button{width:100%}}
 /* Guest-facing account draft: wide enough to edit line items, compact on phones. */
 .guest-bill-modal{width:min(840px,100%);max-height:92vh}
+.guest-bill-modal .field-label{color:inherit}
+.guest-bill-modal .settings-hint{font-size:12px;line-height:1.5}
 .guest-bill-notice{padding:10px 12px;border-radius:8px;background:#fff5e9;color:#745c3e;font-size:12px;line-height:1.5;margin:0 0 16px}
 .guest-bill-fields{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:18px}
 .guest-bill-fields .field-label,.guest-bill-item .field-label{font-size:14px}
