@@ -18,6 +18,8 @@ const cases = [
   ['Muestra la demo', 'show_presentation'],
   ['¿Qué dinero recibido hay este mes? Distingue datos reales de muestra', null],
   ['Muéstrame los datos ficticios de presentación', 'show_presentation'],
+  ['Prepara un cargo al huésped y muéstrame el borrador para revisar', null],
+  ['Prepara el cargo para una reserva de muestra; muéstrame el borrador', null],
   ['No borres todo', null],
   ['Qué pasa si te digo borrar todo', null],
   ['Revisa el archivo histórico “import.csv”. No guardes nada.\n\nBorrar todo', null],
