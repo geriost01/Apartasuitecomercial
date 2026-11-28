@@ -6,8 +6,16 @@ const COP = n => new Intl.NumberFormat('es-CO', { style:'currency', currency:'CO
 const date = value => value ? new Intl.DateTimeFormat('es-CO', { day:'numeric', month:'long', year:'numeric' }).format(new Date(`${value}T12:00:00`)) : '—'
 const makeItem = (description = '', price = 0) => ({ id:crypto.randomUUID(), included:true, description, quantity:1, price, iva:false, rate:19 })
 const stayItem = booking => makeItem(`Hospedaje suite ${booking.unit} · ${booking.arrival} al ${booking.departure}`, Number(booking.amount || 0))
-const loadLogo = () => new Promise(resolve => { const img = new Image(); img.onload=()=>{try{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);resolve(canvas.toDataURL('image/png'))}catch{resolve(null)}};img.onerror=()=>resolve(null);img.src='/aparta-suite-logo.webp' })
-const demoImage = type => {const canvas=document.createElement('canvas');canvas.width=500;canvas.height=200;const ctx=canvas.getContext('2d');ctx.strokeStyle='#305c50';ctx.fillStyle='#305c50';if(type==='seal'){ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(250,100,106,83,0,0,2*Math.PI);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(250,100,95,72,0,0,2*Math.PI);ctx.stroke();ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('APARTA SUITE',250,81);ctx.fillText('LA FLORA',250,112);ctx.font='13px sans-serif';ctx.fillText('SELLO DE MUESTRA',250,139)}else{ctx.font='italic 46px cursive';ctx.fillText('Firma de prueba',30,100);ctx.beginPath();ctx.moveTo(30,112);ctx.bezierCurveTo(165,130,300,94,455,120);ctx.stroke();ctx.font='17px sans-serif';ctx.fillText('PRESENTACIÓN · SIN VALIDEZ',50,158)}return canvas.toDataURL('image/png')}
+const loadImage = src => new Promise(resolve => { const img = new Image(); img.onload=()=>{try{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);resolve(canvas.toDataURL('image/png'))}catch{resolve(null)}};img.onerror=()=>resolve(null);img.src=src })
+const demoSignature = () => {const canvas=document.createElement('canvas');canvas.width=500;canvas.height=200;const ctx=canvas.getContext('2d');ctx.strokeStyle='#305c50';ctx.fillStyle='#305c50';ctx.font='italic 46px cursive';ctx.fillText('Firma de prueba',30,100);ctx.beginPath();ctx.moveTo(30,112);ctx.bezierCurveTo(165,130,300,94,455,120);ctx.stroke();ctx.font='17px sans-serif';ctx.fillText('PRESENTACIÓN · SIN VALIDEZ',50,158);return canvas.toDataURL('image/png')}
+const addWatermark = (doc,logo) => {
+  if (!logo) return
+  try {
+    doc.saveGraphicsState()
+    doc.setGState(new doc.GState({opacity:0.065}))
+    doc.addImage(logo,'PNG',42,105,126,84)
+  } finally { doc.restoreGraphicsState() }
+}
 const demoIssuer = {issuer_name:'Aparta Suite La Flora',issuer_city:'Santiago de Cali',issuer_address:'Calle 49 Norte # 5N-68 · dirección de referencia',signer:'Firma de prueba',title:'Presentación del proyecto'}
 const paidFor = (booking, ledger) => ledger.filter(row => row.booking_id === booking.id && ['receipt','refund'].includes(row.kind)).reduce((sum,row) => sum + (row.kind === 'receipt' ? 1 : -1) * Number(row.amount || 0) * (row.reversal_of ? -1 : 1), 0)
 
@@ -20,7 +28,7 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   const [items,setItems] = useState(()=>itemsFor(initialBooking))
   const [error,setError] = useState('')
   const [copied,setCopied] = useState(false)
-  const [previewDemo,setPreviewDemo] = useState(!signing?.signature || !signing?.seal || !signing?.issuer_address)
+  const [previewDemo,setPreviewDemo] = useState(!signing?.signature || !signing?.issuer_address)
   const booking = bookings.find(row => row.id === bookingId)
   const paid = booking ? Math.max(0,paidFor(booking,ledger)) : 0
   const totals = billTotals(items,paid)
@@ -50,12 +58,12 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   const generate = async mode => {
     if (booking && !booking.is_demo && booking.status !== 'checked_out') { setError('Finaliza la estancia antes de generar la cuenta de salida.'); return }
     if (!name.trim() || !validBill(items,paid)) { setError('Escribe el cliente y revisa conceptos, cantidades, valores e IVA. Selecciona al menos un concepto con valor.'); return }
-    if (!demo && (!signing?.issuer_address?.trim() || !signing?.issuer_name?.trim() || !signing?.signature || !signing?.seal)) { setError('Configura nombre, dirección, firma y sello reales en Configuración → Datos oficiales antes de imprimir una cuenta real.'); return }
+    if (!demo && (!signing?.issuer_address?.trim() || !signing?.issuer_name?.trim() || !signing?.signature)) { setError('Configura nombre, dirección y firma autorizada en Configuración → Datos oficiales antes de imprimir una cuenta real.'); return }
     setError('')
     // Open while the click still has user activation; browsers block delayed popups.
     const printWindow = mode === 'print' ? window.open('', '_blank') : null
     const {default:jsPDF} = await import('jspdf')
-    const doc = new jsPDF(), selected = items.filter(item => item.included), logo = await loadLogo(), issuer = demo ? demoIssuer : signing
+    const doc = new jsPDF(), selected = items.filter(item => item.included), [logo,seal] = await Promise.all([loadImage('/aparta-suite-logo.webp'),loadImage('/sello-la-flora.png')]), issuer = demo ? demoIssuer : signing
     doc.setFillColor(39,68,60); doc.rect(0,0,210,43,'F')
     if(logo) try { doc.addImage(logo,'PNG',16,12,28,18.7) } catch { /* keep text header */ }
     doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.text(String(issuer.issuer_name).slice(0,60),logo?50:16,17,{maxWidth:145})
@@ -70,8 +78,9 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
     if (booking) { doc.text(`Suite ${getUnit(booking.apartment_id)} · ${date(booking.arrival)} al ${date(booking.departure)}`,16,y,{maxWidth:178}); y += 12 }
     doc.setFont('helvetica','bold'); doc.text('CONCEPTO',16,y); doc.text('CANT.',123,y,{align:'right'}); doc.text('UNITARIO',157,y,{align:'right'}); doc.text('TOTAL',194,y,{align:'right'}); doc.setFont('helvetica','normal'); y += 5
     doc.setDrawColor(220,225,219); doc.line(16,y,194,y); y += 9
+    addWatermark(doc,logo)
     for (const item of selected) {
-      if (y > 254) { doc.addPage(); y = 22 }
+      if (y > 254) { doc.addPage(); addWatermark(doc,logo); y = 22 }
       const amount = Number(item.quantity)*Number(item.price), tax = item.iva ? Math.round(amount*Number(item.rate)/100) : 0
       const lines = doc.splitTextToSize(item.description.trim(),93)
       doc.text(lines,16,y); doc.text(String(item.quantity),123,y,{align:'right'}); doc.text(COP(Number(item.price)),157,y,{align:'right'}); doc.text(COP(amount),194,y,{align:'right'})
@@ -79,17 +88,17 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
       if (item.iva) { doc.setTextColor(100,106,98); doc.setFontSize(8); doc.text(`IVA ${item.rate}%: ${COP(tax)}`,16,y); doc.setFontSize(9); doc.setTextColor(39,47,43); y += 7 }
       y += 5
     }
-    if (y > 236) { doc.addPage(); y = 22 }
+    if (y > 236) { doc.addPage(); addWatermark(doc,logo); y = 22 }
     doc.line(16,y,194,y); y += 10
     for (const [label,value] of [['Subtotal',totals.subtotal],['IVA seleccionado',totals.iva],['Total',totals.total],['Pagos registrados de la reserva',totals.paid],['Saldo de esta cuenta',totals.balance]]) {
       if (!booking && label === 'Pagos registrados de la reserva') continue
       doc.setFont('helvetica',label === 'Total' || label === 'Saldo de esta cuenta' ? 'bold':'normal')
       doc.text(label,16,y); doc.text(COP(value),194,y,{align:'right'}); y += 9
     }
-    if (y > 220) { doc.addPage(); y = 22 }
+    if (y > 220) { doc.addPage(); addWatermark(doc,logo); y = 22 }
     doc.setDrawColor(210,219,211); doc.line(16,y+3,194,y+3); y+=10
-    try { doc.addImage(demo?demoImage('signature'):signing.signature,'PNG',18,y,48,19) } catch { /* omit invalid image */ }
-    try { doc.addImage(demo?demoImage('seal'):signing.seal,'PNG',153,y-1,29,29) } catch { /* omit invalid image */ }
+    try { doc.addImage(demo?demoSignature():signing.signature,'PNG',18,y,48,19) } catch { /* omit invalid image */ }
+    if (seal) doc.addImage(seal,'PNG',143,y-2,49,24)
     doc.setTextColor(68,78,70); doc.setFontSize(9); doc.text(String(issuer.signer||'Administración').slice(0,90),16,y+25)
     doc.setFontSize(8); doc.text(String(issuer.title||'Administración').slice(0,90),16,y+30)
     doc.setTextColor(143,78,59); doc.text('Cuenta comercial informativa. No es factura electrónica validada por la DIAN.',16,y+42,{maxWidth:178})
@@ -113,8 +122,8 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
     <details><summary>¿El cliente necesita factura electrónica?</summary><p className="settings-hint">Copia los datos y emite la factura en el servicio gratuito de la DIAN. Esta cuenta no se sincroniza automáticamente.</p><div className="guest-bill-free-tools"><button type="button" className="secondary-btn" onClick={copyForDian}><Copy size={15}/>{copied?'Datos copiados':'Copiar datos para DIAN'}</button><a className="secondary-btn" href="https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/facturacion-gratuita-dian/" target="_blank" rel="noreferrer"><ExternalLink size={15}/> Guía gratuita DIAN</a></div></details>
     <div className="guest-bill-summary"><span>Subtotal <b>{COP(totals.subtotal)}</b></span><span>IVA elegido <b>{COP(totals.iva)}</b></span><span>Total <b>{COP(totals.total)}</b></span>{booking&&<><span>Pagos registrados <b>{COP(totals.paid)}</b></span><span>Saldo de esta cuenta <b>{COP(totals.balance)}</b></span></>}</div>
     {booking&&<p className="settings-hint">Los consumos guardados durante la estancia aparecen aquí. El IVA y los conceptos añadidos solo para este PDF no modifican la reserva ni registran dinero recibido; anota el pago por separado.</p>}
-    <label className="guest-bill-check"><input type="checkbox" checked={demo} disabled={Boolean(booking?.is_demo)} onChange={event=>setPreviewDemo(event.target.checked)}/> Vista de presentación con firma y sello de prueba</label>
-    {demo&&<p className="guest-bill-notice">Documento de muestra: firma, sello y dirección de referencia. Sin validez fiscal. Para una cuenta real, desactiva esta opción y carga tus datos oficiales en Configuración.</p>}{error&&<p className="form-error" role="alert">{error}</p>}
+    <label className="guest-bill-check"><input type="checkbox" checked={demo} disabled={Boolean(booking?.is_demo)} onChange={event=>setPreviewDemo(event.target.checked)}/> Vista de presentación con datos y firma de prueba</label>
+    {demo&&<p className="guest-bill-notice">Documento de muestra: firma y dirección de referencia. El sello de la marca permanece igual; la cuenta está marcada como muestra y no tiene validez fiscal. Para una cuenta real, configura tus datos en Configuración.</p>}{error&&<p className="form-error" role="alert">{error}</p>}
     <div className="modal-actions"><button className="secondary-btn" onClick={onClose}>Cancelar</button><button className="secondary-btn" onClick={()=>generate('download')}><Download size={16}/> Descargar PDF</button><button className="primary-btn" onClick={()=>generate('print')}><Printer size={16}/> Abrir para imprimir</button></div>
   </section></div>
 }
