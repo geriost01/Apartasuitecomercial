@@ -683,3 +683,24 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .apartment-management-selected span{color:var(--muted);font-size:13px}
 .apartment-management-selected button{flex:none}
 @media(max-width:560px){.apartment-management-control{display:block}.apartment-management-selected{margin-top:12px;align-items:stretch;flex-direction:column;gap:10px}.apartment-management-selected button{width:100%}}
+/* Guest-facing account draft: wide enough to edit line items, compact on phones. */
+.guest-bill-modal{width:min(840px,100%);max-height:92vh}
+.guest-bill-notice{padding:10px 12px;border-radius:8px;background:#fff5e9;color:#745c3e;font-size:12px;line-height:1.5;margin:0 0 16px}
+.guest-bill-fields{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:18px}
+.guest-bill-fields .field-label,.guest-bill-item .field-label{font-size:14px}
+.guest-bill-fields input,.guest-bill-fields select,.guest-bill-item input{font-size:16px;min-height:40px}
+.guest-bill-items h3{font-size:16px;margin:0 0 10px;color:#34453b}
+.guest-bill-item{display:grid;grid-template-columns:64px minmax(160px,2fr) 80px 130px 105px 90px 24px;gap:8px;align-items:end;padding:12px 0;border-top:1px solid #e7e9e3}
+.guest-bill-description{min-width:0}
+.guest-bill-check{display:flex;align-items:center;gap:5px;font-size:13px;color:#455348;min-height:39px}
+.guest-bill-check input{width:18px;height:18px;min-height:0;accent-color:#557761}
+.guest-bill-item>b{font-size:14px;white-space:nowrap;align-self:center;text-align:right}
+.guest-bill-item>.icon-btn{align-self:center}
+.guest-bill-add{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
+.guest-bill-add button{display:flex;align-items:center;gap:5px}
+.guest-bill-summary{display:grid;gap:7px;max-width:350px;margin:0 0 18px auto;padding:13px;background:#f4f7f2;border-radius:8px}
+.guest-bill-summary span{display:flex;justify-content:space-between;gap:15px;font-size:13px}
+.guest-bill-summary span:nth-child(3),.guest-bill-summary span:last-child{font-weight:700;border-top:1px solid #d9e2d7;padding-top:7px}
+.guest-bill-modal .modal-actions{flex-wrap:wrap}
+.guest-bill-modal .modal-actions button{display:flex;align-items:center;gap:5px}
+@media(max-width:760px){.guest-bill-fields{grid-template-columns:1fr}.guest-bill-item{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.guest-bill-description{grid-column:1/-1}.guest-bill-item>.icon-btn{justify-self:end}.guest-bill-item>b{text-align:left}.guest-bill-modal .modal-actions button{flex:1;justify-content:center;min-width:130px}.guest-bill-modal{padding:16px}}
