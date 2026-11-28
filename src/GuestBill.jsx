@@ -6,9 +6,10 @@ const COP = n => new Intl.NumberFormat('es-CO', { style:'currency', currency:'CO
 const date = value => value ? new Intl.DateTimeFormat('es-CO', { day:'numeric', month:'long', year:'numeric' }).format(new Date(`${value}T12:00:00`)) : '—'
 const makeItem = (description = '', price = 0) => ({ id:crypto.randomUUID(), included:true, description, quantity:1, price, iva:false, rate:19 })
 const stayItem = booking => makeItem(`Hospedaje suite ${booking.unit} · ${booking.arrival} al ${booking.departure}`, Number(booking.amount || 0))
+const loadLogo = () => new Promise(resolve => { const img = new Image(); img.onload=()=>{try{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);resolve(canvas.toDataURL('image/png'))}catch{resolve(null)}};img.onerror=()=>resolve(null);img.src='/aparta-suite-logo.webp' })
 const paidFor = (booking, ledger) => ledger.filter(row => row.booking_id === booking.id && ['receipt','refund'].includes(row.kind)).reduce((sum,row) => sum + (row.kind === 'receipt' ? 1 : -1) * Number(row.amount || 0) * (row.reversal_of ? -1 : 1), 0)
 
-export default function GuestBill({ bookings, ledger, charges, apartments, initialBooking, onClose }) {
+export default function GuestBill({ bookings, ledger, charges, apartments, signing, initialBooking, onClose }) {
   const getUnit = id => apartments.find(unit => unit.id === id)?.label || '—'
   const itemsFor = booking => booking ? [stayItem({...booking,unit:getUnit(booking.apartment_id)}),...charges.filter(row=>row.booking_id===booking.id&&!row.voided_at).map(row=>({...makeItem(row.description,row.unit_price),quantity:row.quantity,saved:true}))] : [makeItem()]
   const [bookingId,setBookingId] = useState(initialBooking?.id || '')
@@ -45,19 +46,23 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
   const generate = async mode => {
     if (booking && !booking.is_demo && booking.status !== 'checked_out') { setError('Finaliza la estancia antes de generar la cuenta de salida.'); return }
     if (!name.trim() || !validBill(items,paid)) { setError('Escribe el cliente y revisa conceptos, cantidades, valores e IVA. Selecciona al menos un concepto con valor.'); return }
+    if (!signing?.issuer_address?.trim() || !signing?.issuer_name?.trim()) { setError('Configura el nombre y la dirección reales del establecimiento en Configuración → Datos oficiales antes de imprimir.'); return }
     setError('')
     // Open while the click still has user activation; browsers block delayed popups.
     const printWindow = mode === 'print' ? window.open('', '_blank') : null
     const {default:jsPDF} = await import('jspdf')
-    const doc = new jsPDF(), selected = items.filter(item => item.included)
-    doc.setFillColor(39,68,60); doc.rect(0,0,210,38,'F')
-    doc.setTextColor(255,255,255); doc.setFontSize(17); doc.text('APARTA SUITE LA FLORA',16,17)
-    doc.setFontSize(10); doc.text(demo ? 'MUESTRA · CUENTA PARA HUESPED' : 'CUENTA DETALLADA PARA HUESPED',16,27)
-    doc.setTextColor(39,47,43); doc.setFontSize(13); doc.text('Detalle de consumos',16,51)
-    doc.setFontSize(9); doc.text(`Fecha: ${date(new Date().toISOString().slice(0,10))}`,16,62)
-    doc.text(`Cliente: ${name.trim().slice(0,100)}`,16,69,{maxWidth:175})
-    if (documentId.trim()) doc.text(`Documento: ${documentId.trim().slice(0,35)}`,16,77)
-    let y = documentId.trim() ? 88 : 80
+    const doc = new jsPDF(), selected = items.filter(item => item.included), logo = await loadLogo()
+    doc.setFillColor(39,68,60); doc.rect(0,0,210,43,'F')
+    if(logo) try { doc.addImage(logo,'PNG',16,7,28,28) } catch { /* keep text header */ }
+    doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.text(String(signing.issuer_name).slice(0,60),logo?50:16,17,{maxWidth:145})
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(`${signing.issuer_document ? `NIT / documento ${signing.issuer_document} · ` : ''}${signing.issuer_city||'Cali'}`,logo?50:16,25,{maxWidth:145})
+    doc.text(String(signing.issuer_address).slice(0,150),logo?50:16,33,{maxWidth:145})
+    doc.setTextColor(39,47,43); doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.text(demo?'CUENTA DE MUESTRA':'CUENTA DETALLADA DE HOSPEDAJE',16,55)
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(88,96,89)
+    doc.text(`Emitida: ${new Intl.DateTimeFormat('es-CO',{dateStyle:'long',timeZone:'America/Bogota'}).format(new Date())}`,16,65)
+    doc.text(`Cliente: ${name.trim().slice(0,100)}`,16,74,{maxWidth:175})
+    if (documentId.trim()) doc.text(`Documento: ${documentId.trim().slice(0,35)}`,16,81)
+    let y = documentId.trim() ? 93 : 86
     if (booking) { doc.text(`Suite ${getUnit(booking.apartment_id)} · ${date(booking.arrival)} al ${date(booking.departure)}`,16,y,{maxWidth:178}); y += 12 }
     doc.setFont('helvetica','bold'); doc.text('CONCEPTO',16,y); doc.text('CANT.',123,y,{align:'right'}); doc.text('UNITARIO',157,y,{align:'right'}); doc.text('TOTAL',194,y,{align:'right'}); doc.setFont('helvetica','normal'); y += 5
     doc.setDrawColor(220,225,219); doc.line(16,y,194,y); y += 9
@@ -77,10 +82,14 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
       doc.setFont('helvetica',label === 'Total' || label === 'Saldo de esta cuenta' ? 'bold':'normal')
       doc.text(label,16,y); doc.text(COP(value),194,y,{align:'right'}); y += 9
     }
-    doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(143,78,59)
-    if (y > 259) { doc.addPage(); y = 22 }
-    doc.text('Cuenta informativa. No es factura electronica ni reemplaza el documento validado por la DIAN.',16,y+7,{maxWidth:178})
-    if (demo) doc.text('DATOS FICTICIOS DE PRESENTACION · SIN VALIDEZ FISCAL',16,y+16)
+    if (y > 220) { doc.addPage(); y = 22 }
+    doc.setDrawColor(210,219,211); doc.line(16,y+3,194,y+3); y+=10
+    if(signing?.signature) try { doc.addImage(signing.signature,'PNG',18,y,48,19) } catch { /* omit invalid image */ }
+    if(signing?.seal) try { doc.addImage(signing.seal,'PNG',153,y-1,29,29) } catch { /* omit invalid image */ }
+    doc.setTextColor(68,78,70); doc.setFontSize(9); doc.text(String(signing?.signer||'Administración').slice(0,90),16,y+25)
+    doc.setFontSize(8); doc.text(String(signing?.title||'Administración').slice(0,90),16,y+30)
+    doc.setTextColor(143,78,59); doc.text('Cuenta comercial informativa. No es factura electrónica validada por la DIAN.',16,y+42,{maxWidth:178})
+    if (demo) doc.text('DATOS FICTICIOS DE PRESENTACIÓN · SIN VALIDEZ FISCAL',16,y+50)
     const fileName = `cuenta-huesped-${(booking ? getUnit(booking.apartment_id) : name.trim()).replace(/[^\w-]/g,'-')}.pdf`
     if (mode === 'download') doc.save(fileName)
     else {
