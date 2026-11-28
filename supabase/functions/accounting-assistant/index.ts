@@ -35,7 +35,7 @@ async function authorized(request: Request) {
 }
 
 async function countOperationalData(service: ReturnType<typeof createClient>) {
-  const tables = ["bookings", "ledger", "tasks", "statements", "owner_requests"];
+  const tables = ["bookings", "ledger", "tasks", "statements", "owner_requests", "guest_charges"];
   const entries = await Promise.all(tables.map(async (table) => {
     const { count, error } = await service.from(table).select("id", { count: "exact", head: true });
     if (error) throw new Error("No se pudo contar toda la información operativa.");

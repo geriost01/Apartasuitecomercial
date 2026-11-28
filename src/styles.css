@@ -704,3 +704,13 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .guest-bill-modal .modal-actions{flex-wrap:wrap}
 .guest-bill-modal .modal-actions button{display:flex;align-items:center;gap:5px}
 @media(max-width:760px){.guest-bill-fields{grid-template-columns:1fr}.guest-bill-item{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.guest-bill-description{grid-column:1/-1}.guest-bill-item>.icon-btn{justify-self:end}.guest-bill-item>b{text-align:left}.guest-bill-modal .modal-actions button{flex:1;justify-content:center;min-width:130px}.guest-bill-modal{padding:16px}}
+.guest-charges{border-top:1px solid #e8ebe5;margin-top:17px;padding-top:16px}
+.guest-charge-row{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid #eff0ea;font-size:13px}
+.guest-charge-row>span{flex:1;min-width:0}
+.guest-charge-row b,.guest-charge-row small{display:block}
+.guest-charge-row small{font-size:11px;color:#8a9188;margin-top:3px}
+.guest-charge-form{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+.guest-charge-form .field-label{font-size:13px}
+.guest-charge-form input,.guest-charge-form select{font-size:16px;min-height:40px}
+.guest-charge-form button{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:5px}
+@media(max-width:520px){.guest-charge-form{grid-template-columns:1fr}}
