@@ -34,6 +34,40 @@ async function authorized(request: Request) {
   return { caller, service, user: identity.user };
 }
 
+async function countOperationalData(service: ReturnType<typeof createClient>) {
+  const tables = ["bookings", "ledger", "tasks", "statements", "owner_requests"];
+  const entries = await Promise.all(tables.map(async (table) => {
+    const { count, error } = await service.from(table).select("id", { count: "exact", head: true });
+    if (error) throw new Error("No se pudo contar toda la información operativa.");
+    return [table, count || 0] as const;
+  }));
+  return Object.fromEntries(entries);
+}
+
+const ticketKey = async () => crypto.subtle.importKey(
+  "raw", new TextEncoder().encode(serviceKey), { name: "HMAC", hash: "SHA-256" }, false, ["sign", "verify"],
+);
+const encodeUrl = (bytes: Uint8Array) => btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const decodeUrl = (value: string) => Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+async function issueDeleteTicket(userId: string, counts: Record<string, number>) {
+  const payload = { userId, counts, expiresAt: Date.now() + 5 * 60_000, nonce: crypto.randomUUID() };
+  const encoded = encodeUrl(new TextEncoder().encode(JSON.stringify(payload)));
+  const signature = new Uint8Array(await crypto.subtle.sign("HMAC", await ticketKey(), new TextEncoder().encode(encoded)));
+  return `${encoded}.${encodeUrl(signature)}`;
+}
+async function readDeleteTicket(ticket: unknown, userId: string) {
+  if (typeof ticket !== "string" || ticket.length > 2000) return null;
+  const [encoded, signature, extra] = ticket.split(".");
+  if (!encoded || !signature || extra) return null;
+  try {
+    const valid = await crypto.subtle.verify("HMAC", await ticketKey(), decodeUrl(signature), new TextEncoder().encode(encoded));
+    if (!valid) return null;
+    const payload = JSON.parse(new TextDecoder().decode(decodeUrl(encoded)));
+    if (payload.userId !== userId || !Number.isSafeInteger(payload.expiresAt) || payload.expiresAt < Date.now()) return null;
+    return payload.counts && typeof payload.counts === "object" ? payload.counts as Record<string, number> : null;
+  } catch { return null; }
+}
+
 async function loadContext(service: ReturnType<typeof createClient>) {
   const [apartments, bookings, ledger, tasks, statements, requests] = await Promise.all([
     service.from("apartments").select("id,label,active").order("label"),
@@ -201,6 +235,47 @@ Deno.serve(async (request) => {
   if (!body || typeof body !== "object") return out(400, { error: "Solicitud inválida." });
 
   if (body.action === "confirm") return await commitDraft(auth.service, body.draft);
+  if (body.action === "prepare_delete" || body.action === "execute_delete") {
+    const { data: canManage, error: permissionError } = await auth.caller.rpc("la_flora_can_manage_staff");
+    if (permissionError || canManage !== true)
+      return out(403, { error: "Solo la administración principal puede borrar datos operativos." });
+  }
+  if (body.action === "prepare_delete") {
+    const requestText = typeof body.request === "string" ? body.request.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+    if (!/(borr|elimin|limpi|vaci|formate)/.test(requestText) || !/\b(todo|todos|toda|base completa)\b/.test(requestText))
+      return out(400, { error: "Pide expresamente borrar todos los datos operativos para preparar la vista previa." });
+    if (/\b(suite|apartamento|apto)\s*#?\s*\d{2,4}\b/.test(requestText))
+      return out(200, { preview: null, message: "Mencionaste una suite específica. La opción disponible aquí borra datos operativos de todo el edificio, así que no voy a ampliarla a esa suite. Si eso es lo que quieres, formula la solicitud para todo el edificio." });
+    try {
+      const counts = await countOperationalData(auth.service);
+      const total = Object.values(counts).reduce((sum, count) => sum + Number(count || 0), 0);
+      if (!total) return out(200, { preview: null, message: "No hay registros operativos para borrar. No se hizo ningún cambio." });
+      return out(200, {
+        message: "Confirmación crítica: estás solicitando borrar todos los datos operativos. Revisa el alcance y la cantidad antes de decidir.",
+        preview: { scope: "Todos los datos operativos del edificio", counts, ticket: await issueDeleteTicket(auth.user.id, counts) },
+      });
+    } catch {
+      return out(500, { error: "No se pudo contar toda la información. No se hizo ningún cambio." });
+    }
+  }
+  if (body.action === "execute_delete") {
+    if (body.confirmation !== "BORRAR TODO")
+      return out(400, { error: "La confirmación no coincide. No se borró ningún dato." });
+    try {
+      const expected = await readDeleteTicket(body.ticket, auth.user.id);
+      if (!expected) return out(409, { error: "La vista previa expiró o no pertenece a esta sesión. Solicita un conteo nuevo." });
+      const current = await countOperationalData(auth.service);
+      if (JSON.stringify(current) !== JSON.stringify(expected))
+        return out(409, { error: "La información cambió desde la vista previa. No se borró nada; solicita un nuevo conteo." });
+      const { data: deleted, error } = await auth.service.rpc("delete_operational_data", {
+        p_expected: expected, p_confirmation: body.confirmation,
+      });
+      if (error) return out(409, { error: "El borrado se detuvo y no se confirmó. Revisa de nuevo el conteo antes de intentar." });
+      return out(200, { ok: true, deleted });
+    } catch {
+      return out(500, { error: "No se pudo completar el borrado. No se confirmó ningún resultado." });
+    }
+  }
   if (body.action !== "chat") return out(400, { error: "Acción no disponible." });
   if (!nvidiaKey) return out(503, { error: "Falta configurar la llave NVIDIA_API_KEY como secreto de la función en Supabase." });
   if (!Array.isArray(body.messages) || body.messages.length < 1 || body.messages.length > 16) return out(400, { error: "La conversación excede el límite permitido." });
