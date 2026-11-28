@@ -131,12 +131,21 @@ function normalizeModelDraft(raw: any) {
     const category = ["cleaning", "aseo", "limpieza"].includes(categoryText) ? "cleaning"
       : ["supplies", "insumo", "insumos", "insumos de limpieza"].includes(categoryText) ? "supplies"
       : ["owner_extra", "reparación", "reparacion", "reparaciones", "reparación / otro", "reparacion / otro"].includes(categoryText) ? "owner_extra" : categoryText;
-    return { ...raw, type: "expense", apartment, category, description: String(first(raw.description, raw.concept, raw.concepto, raw.item_description, raw.item, raw.detalle) || "").trim(), amount, posted_on: first(raw.posted_on, raw.date, raw.fecha) };
+    const description = String(first(raw.description, raw.concept, raw.concepto, raw.item_description, raw.item, raw.detalle) || "").trim();
+    const postedOn = first(raw.posted_on, raw.date, raw.fecha);
+    if (!apartment || !["cleaning", "supplies", "owner_extra"].includes(category) || description.length < 3 || !Number.isSafeInteger(amount) || amount < 1 || !isIsoDate(postedOn)) return null;
+    return { ...raw, type: "expense", apartment, category, description, amount, posted_on: postedOn };
   }
   if (raw.type === "booking") {
     const rateValue = first(raw.nightly_rate, raw.rate, raw.valor_noche, raw.tarifa_por_noche);
     const nightlyRate = typeof rateValue === "number" ? rateValue : Number(String(rateValue || "").replace(/[^0-9]/g, ""));
-    return { ...raw, type: "booking", apartment, guest_name: String(first(raw.guest_name, raw.name, raw.guest, raw.huesped, raw.huésped) || "").trim(), guests: Number(first(raw.guests, raw.people, raw.personas)), arrival: first(raw.arrival, raw.check_in, raw.check_in_date, raw.fecha_entrada), departure: first(raw.departure, raw.check_out, raw.check_out_date, raw.fecha_salida), nightly_rate: nightlyRate, channel: first(raw.channel, raw.canal), check_in_time: first(raw.check_in_time, raw.hora_check_in), check_out_time: first(raw.check_out_time, raw.hora_check_out) };
+    const guestName = String(first(raw.guest_name, raw.name, raw.guest, raw.huesped, raw.huésped) || "").trim();
+    const guests = Number(first(raw.guests, raw.people, raw.personas));
+    const arrival = first(raw.arrival, raw.check_in, raw.check_in_date, raw.fecha_entrada);
+    const departure = first(raw.departure, raw.check_out, raw.check_out_date, raw.fecha_salida);
+    const channel = first(raw.channel, raw.canal);
+    if (!apartment || guestName.length < 2 || !Number.isInteger(guests) || guests < 1 || !isIsoDate(arrival) || !isIsoDate(departure) || arrival >= departure || rateValue === undefined || !Number.isSafeInteger(nightlyRate) || nightlyRate < 0 || !["Airbnb", "Directa", "Booking", "Redes sociales", "Expedia", "Otro"].includes(channel)) return null;
+    return { ...raw, type: "booking", apartment, guest_name: guestName, guests, arrival, departure, nightly_rate: nightlyRate, channel, check_in_time: first(raw.check_in_time, raw.hora_check_in), check_out_time: first(raw.check_out_time, raw.hora_check_out) };
   }
   return null;
 }
