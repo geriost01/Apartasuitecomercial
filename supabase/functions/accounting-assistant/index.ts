@@ -116,9 +116,11 @@ async function loadContext(service: ReturnType<typeof createClient>) {
 function normalizeModelDraft(raw: any) {
   if (!raw || typeof raw !== "object") return null;
   if (raw.type === "booking_batch") {
-    if (!Array.isArray(raw.bookings)) return null;
+    if (!Array.isArray(raw.bookings) || raw.bookings.length < 1 || raw.bookings.length > 30) return null;
     if (raw.bookings.some((row: any) => !row || typeof row !== "object" || Array.isArray(row))) return null;
-    return { type: "booking_batch", bookings: raw.bookings.map((row: any) => normalizeModelDraft({ ...row, type: "booking" })) };
+    const bookings = raw.bookings.map((row: any) => normalizeModelDraft({ ...row, type: "booking" }));
+    if (bookings.some((row: any) => !row || row.type !== "booking")) return null;
+    return { type: "booking_batch", bookings };
   }
   const first = (...values: any[]) => values.find((value) => value !== undefined && value !== null && value !== "");
   const apartment = String(first(raw.apartment, raw.suite, raw.unit, raw.apartamento) || "").replace(/^(suite|apartamento)\s*/i, "").trim();
