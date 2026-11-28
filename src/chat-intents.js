@@ -11,7 +11,7 @@ export function classifyChatCommand(text) {
   const hide = /\b(ocult\w*|escond\w*|quit\w*)\b/.test(value)
   const restore = /\b(muestr\w*|mostr\w*|activ\w*|restaur\w*)\b/.test(value)
   if (presentation && (destructive || hide) && /\b(reserva\w*|ocupacion|historial|dato\w*|muestra\w*)\b/.test(value)) return 'hide_presentation'
-  if (presentation && restore) return 'show_presentation'
+  if (presentation && restore && /^(?:por favor\s+)?(?:muestra|muestrame|mostr\w*|activ\w*|restaur\w*|vuelve\s+a\s+mostrar)\b/.test(value)) return 'show_presentation'
 
   const all = /\b(todo\w*|toda\s+la\s+informacion|base\s+completa)\b/.test(value)
   if (!destructive || !all) return null

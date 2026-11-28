@@ -42,6 +42,13 @@ test('una acción desconocida no presenta un botón para guardar', () => {
   assert.equal(result.draft, null)
 })
 
+test('un consumo del huésped es un cargo separado y exige precio y huésped', () => {
+  const charge = { type: 'guest_charge', apartment: '201', guest_name: 'Ana Pérez', description: 'Gaseosa', kind: 'snack', quantity: 2, unit_price: 5000 }
+  assert.equal(parseModelJson(JSON.stringify({ reply: 'Revisa el cargo.', draft: charge })).draft.type, 'guest_charge')
+  assert.equal(parseModelJson(JSON.stringify({ reply: 'Falta precio.', draft: { ...charge, unit_price: undefined } })).draft, null)
+  assert.equal(parseModelJson(JSON.stringify({ reply: 'Falta huésped.', draft: { ...charge, guest_name: undefined } })).draft, null)
+})
+
 test('una respuesta en prosa sigue siendo legible sin tarjeta de guardado', () => {
   const result = parseModelJson('En la información disponible no hay pagos registrados.')
   assert.match(result.reply, /no hay pagos/)

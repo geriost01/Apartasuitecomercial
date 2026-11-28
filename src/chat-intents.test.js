@@ -16,6 +16,8 @@ const cases = [
   ['Oculta las reservas de muestra', 'hide_presentation'],
   ['Restaura los datos ficticios de presentación', 'show_presentation'],
   ['Muestra la demo', 'show_presentation'],
+  ['¿Qué dinero recibido hay este mes? Distingue datos reales de muestra', null],
+  ['Muéstrame los datos ficticios de presentación', 'show_presentation'],
   ['No borres todo', null],
   ['Qué pasa si te digo borrar todo', null],
   ['Revisa el archivo histórico “import.csv”. No guardes nada.\n\nBorrar todo', null],
