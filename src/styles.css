@@ -521,3 +521,12 @@ html[data-theme="forest"] .unit-detail-info span,html[data-theme="forest"] .unit
  .calendar-app-panel .calendar-booking{height:44px;padding:4px 7px}
  .calendar-mode .sidebar::after{display:none}
 }
+
+/* Color con presencia, manteniendo texto oscuro y legible. */
+.payment-pending,.calendar-booking.payment-pending,.booking-state-card.payment-pending{background:#ef9aa1;color:#5e0f17;border-color:#c94e59}
+.payment-partial,.calendar-booking.payment-partial,.booking-state-card.payment-partial{background:#8ec5f4;color:#0a3563;border-color:#4189c7}
+.payment-paid,.calendar-booking.payment-paid,.booking-state-card.payment-paid{background:#91d69e;color:#123f20;border-color:#399052}
+.payment-credit,.calendar-booking.payment-credit,.booking-state-card.payment-credit{background:#b69aea;color:#341d65;border-color:#7651b5}
+.calendar-blocked-key,.calendar-booking.calendar-blocked{background:#c7ccd3;color:#27313d;border-color:#838c98}
+.calendar-app-controls>b{text-transform:none}
+@media(min-width:761px){.calendar-mode .calendar-topbar .mobile-menu{display:none}}
