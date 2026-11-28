@@ -14,9 +14,9 @@
       <circle cx="25" cy="8" r="0.45"/><circle cx="19" cy="22" r="0.5"/>
     </pattern>
   </defs>
-  <rect width="500" height="240" fill="#f8f5ec"/>
-  <rect width="500" height="240" filter="url(#paper-grain)" opacity="0.28"/>
-  <g transform="rotate(-1.4 250 120)" filter="url(#ink-edge)" opacity="0.88">
+  <rect width="500" height="240" fill="#faf8f2"/>
+  <rect width="500" height="240" filter="url(#paper-grain)" opacity="0.20"/>
+  <g transform="rotate(-1.4 250 120)" filter="url(#ink-edge)" opacity="0.68">
     <g fill="none" stroke="#244a78">
       <ellipse cx="250" cy="120" rx="232" ry="105" stroke-width="4.5"/>
       <ellipse cx="250" cy="120" rx="221" ry="94" stroke-width="1.7"/>
@@ -33,5 +33,5 @@
       <circle cx="66" cy="120" r="3"/><circle cx="434" cy="120" r="3"/>
     </g>
   </g>
-  <rect x="16" y="14" width="468" height="212" fill="url(#dry-ink)" opacity="0.35"/>
+  <rect x="16" y="14" width="468" height="212" fill="url(#dry-ink)" opacity="0.20"/>
 </svg>
