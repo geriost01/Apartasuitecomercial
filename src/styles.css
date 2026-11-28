@@ -687,6 +687,8 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .guest-bill-modal{width:min(840px,100%);max-height:92vh}
 .guest-bill-modal .field-label{color:inherit}
 .guest-bill-modal .settings-hint{font-size:12px;line-height:1.5}
+.guest-bill-free-tools{display:flex;flex-wrap:wrap;gap:8px;margin:-8px 0 14px}
+.guest-bill-free-tools a{text-decoration:none}
 .guest-bill-notice{padding:10px 12px;border-radius:8px;background:#fff5e9;color:#745c3e;font-size:12px;line-height:1.5;margin:0 0 16px}
 .guest-bill-fields{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:18px}
 .guest-bill-fields .field-label,.guest-bill-item .field-label{font-size:14px}
