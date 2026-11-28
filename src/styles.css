@@ -670,3 +670,16 @@ html[data-theme="forest"] .danger-action:hover:not(:disabled){color:#fff7f2!impo
 html[data-theme="violet"] .unit-management-row small{color:#d4ccdc}
 html[data-theme="violet"] .danger-action{color:#ffdce5!important;border-color:#a66c7c!important;background:#3a2930!important}
 html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!important;border-color:#d99aaa!important;background:#54333d!important}
+.settings-tabs-bar{margin-bottom:15px}
+.settings-tabs-bar .booking-view-toggle{max-width:100%;overflow-x:auto}
+.settings-tabs-bar .booking-view-toggle button{white-space:nowrap}
+.apartment-management-panel{min-height:0}
+.apartment-management-control{display:flex;align-items:end;gap:16px;flex-wrap:wrap}
+.apartment-management-control>.field-label{min-width:min(100%,220px);margin:0}
+.apartment-management-control select{width:100%}
+.apartment-management-selected{display:flex;align-items:center;justify-content:space-between;gap:22px;flex:1;min-width:min(100%,320px);padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface-soft)}
+.apartment-management-selected>div{display:grid;gap:3px}
+.apartment-management-selected b{color:var(--text);font-size:14px}
+.apartment-management-selected span{color:var(--muted);font-size:13px}
+.apartment-management-selected button{flex:none}
+@media(max-width:560px){.apartment-management-control{display:block}.apartment-management-selected{margin-top:12px;align-items:stretch;flex-direction:column;gap:10px}.apartment-management-selected button{width:100%}}
