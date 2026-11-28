@@ -690,7 +690,7 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .guest-bill-fields .field-label,.guest-bill-item .field-label{font-size:14px}
 .guest-bill-fields input,.guest-bill-fields select,.guest-bill-item input{font-size:16px;min-height:40px}
 .guest-bill-items h3{font-size:16px;margin:0 0 10px;color:#34453b}
-.guest-bill-item{display:grid;grid-template-columns:64px minmax(160px,2fr) 80px 130px 105px 90px 24px;gap:8px;align-items:end;padding:12px 0;border-top:1px solid #e7e9e3}
+.guest-bill-item{display:grid;grid-template-columns:64px minmax(130px,2fr) 70px 115px 92px 76px 90px 24px;gap:8px;align-items:end;padding:12px 0;border-top:1px solid #e7e9e3}
 .guest-bill-description{min-width:0}
 .guest-bill-check{display:flex;align-items:center;gap:5px;font-size:13px;color:#455348;min-height:39px}
 .guest-bill-check input{width:18px;height:18px;min-height:0;accent-color:#557761}
