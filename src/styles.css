@@ -496,3 +496,28 @@ html[data-theme="forest"] .unit-detail-info span,html[data-theme="forest"] .unit
  .calendar-mode .sidebar.sidebar-open{transform:translateX(0)}
 }
 @media(prefers-reduced-motion:reduce){.calendar-mode .sidebar{transition:none}}
+
+/* Reservas: estados con lectura rápida y contraste en todos los temas. */
+.payment-pending,.calendar-booking.payment-pending,.booking-state-card.payment-pending{background:#ffe1e3;color:#841f2c;border-color:#e88992}
+.payment-partial,.calendar-booking.payment-partial,.booking-state-card.payment-partial{background:#d9ecff;color:#124c82;border-color:#75b4e8}
+.payment-paid,.calendar-booking.payment-paid,.booking-state-card.payment-paid{background:#d9f1df;color:#15582c;border-color:#75c188}
+.payment-credit,.calendar-booking.payment-credit,.booking-state-card.payment-credit{background:#e9ddff;color:#51318a;border-color:#af94e5}
+.calendar-blocked-key,.calendar-booking.calendar-blocked{background:#e3e6ea;color:#3b4652;border-color:#b9c0c8}
+.calendar-app-panel .booking-calendar{grid-template-columns:82px repeat(var(--calendar-days),minmax(122px,1fr))}
+.calendar-app-panel .calendar-day-head{min-height:54px;font-size:12px}
+.calendar-app-panel .calendar-day-head small{font-size:10px}.calendar-app-panel .calendar-day-head b{font-size:15px}
+.calendar-app-panel .calendar-suite,.calendar-app-panel .calendar-day-cell{min-height:62px}
+.calendar-app-panel .booking-calendar-row{grid-auto-rows:62px;min-height:62px}
+.calendar-app-panel .calendar-booking{height:48px;margin:0 4px;padding:5px 9px;border-radius:8px;box-shadow:0 2px 5px #17201812}
+.calendar-app-panel .calendar-booking b{font-size:11px;font-weight:750;color:inherit}
+.calendar-app-panel .calendar-booking small{font-size:10px;font-weight:650;color:inherit;opacity:.95}
+.calendar-mode .page-footer{display:none}
+.calendar-mode .sidebar::after{content:'›';position:absolute;top:50%;right:-12px;display:grid;place-items:center;width:22px;height:48px;transform:translateY(-50%);border:1px solid var(--line);border-left:0;border-radius:0 9px 9px 0;background:var(--paper);color:var(--green);font-size:20px;font-weight:700;box-shadow:5px 2px 12px #10182020;pointer-events:none}
+@media(max-width:760px){
+ .calendar-app-panel .booking-calendar{grid-template-columns:62px repeat(var(--calendar-days),minmax(108px,1fr))}
+ .calendar-app-panel .calendar-day-head{min-height:48px}
+ .calendar-app-panel .calendar-suite,.calendar-app-panel .calendar-day-cell{min-height:56px}
+ .calendar-app-panel .booking-calendar-row{grid-auto-rows:56px;min-height:56px}
+ .calendar-app-panel .calendar-booking{height:44px;padding:4px 7px}
+ .calendar-mode .sidebar::after{display:none}
+}
