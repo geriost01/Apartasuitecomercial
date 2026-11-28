@@ -689,16 +689,16 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .guest-bill-fields{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:12px;margin-bottom:18px}
 .guest-bill-fields .field-label,.guest-bill-item .field-label{font-size:14px}
 .guest-bill-fields input,.guest-bill-fields select,.guest-bill-item input{font-size:16px;min-height:40px}
-.guest-bill-items h3{font-size:16px;margin:0 0 10px;color:#34453b}
+.guest-bill-items h3{font-size:16px;margin:0 0 10px;color:inherit}
 .guest-bill-item{display:grid;grid-template-columns:64px minmax(130px,2fr) 70px 115px 92px 76px 90px 24px;gap:8px;align-items:end;padding:12px 0;border-top:1px solid #e7e9e3}
 .guest-bill-description{min-width:0}
-.guest-bill-check{display:flex;align-items:center;gap:5px;font-size:13px;color:#455348;min-height:39px}
+.guest-bill-check{display:flex;align-items:center;gap:5px;font-size:13px;color:inherit;min-height:39px}
 .guest-bill-check input{width:18px;height:18px;min-height:0;accent-color:#557761}
 .guest-bill-item>b{font-size:14px;white-space:nowrap;align-self:center;text-align:right}
 .guest-bill-item>.icon-btn{align-self:center}
 .guest-bill-add{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 18px}
 .guest-bill-add button{display:flex;align-items:center;gap:5px}
-.guest-bill-summary{display:grid;gap:7px;max-width:350px;margin:0 0 18px auto;padding:13px;background:#f4f7f2;border-radius:8px}
+.guest-bill-summary{display:grid;gap:7px;max-width:350px;margin:0 0 18px auto;padding:13px;background:#f4f7f2;color:#304235;border-radius:8px}
 .guest-bill-summary span{display:flex;justify-content:space-between;gap:15px;font-size:13px}
 .guest-bill-summary span:nth-child(3),.guest-bill-summary span:last-child{font-weight:700;border-top:1px solid #d9e2d7;padding-top:7px}
 .guest-bill-modal .modal-actions{flex-wrap:wrap}
