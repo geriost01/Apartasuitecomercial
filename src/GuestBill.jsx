@@ -31,6 +31,8 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
   const update = (id, key, value) => setItems(list => list.map(item => item.id === id ? {...item,[key]:value} : item))
   const add = kind => setItems(list => [...list,makeItem(kind === 'snack' ? 'Consumo de minibar / confitería' : kind === 'cleaning' ? 'Aseo adicional' : '')])
   const copyForDian = async () => {
+    if (!name.trim() || !validBill(items,paid)) { setError('Completa el cliente y al menos un concepto con valor antes de copiar.'); return }
+    setError('')
     const selected = items.filter(item=>item.included)
     const lines = selected.map(item=>{
       const base = Number(item.quantity)*Number(item.price), tax = item.iva ? Math.round(base*Number(item.rate)/100) : 0

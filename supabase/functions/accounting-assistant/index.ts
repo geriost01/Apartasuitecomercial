@@ -117,6 +117,7 @@ function normalizeModelDraft(raw: any) {
   if (!raw || typeof raw !== "object") return null;
   if (raw.type === "booking_batch") {
     if (!Array.isArray(raw.bookings)) return null;
+    if (raw.bookings.some((row: any) => !row || typeof row !== "object" || Array.isArray(row))) return null;
     return { type: "booking_batch", bookings: raw.bookings.map((row: any) => normalizeModelDraft({ ...row, type: "booking" })) };
   }
   const first = (...values: any[]) => values.find((value) => value !== undefined && value !== null && value !== "");
@@ -135,7 +136,7 @@ function normalizeModelDraft(raw: any) {
     const nightlyRate = typeof rateValue === "number" ? rateValue : Number(String(rateValue || "").replace(/[^0-9]/g, ""));
     return { ...raw, type: "booking", apartment, guest_name: String(first(raw.guest_name, raw.name, raw.guest, raw.huesped, raw.huésped) || "").trim(), guests: Number(first(raw.guests, raw.people, raw.personas)), arrival: first(raw.arrival, raw.check_in, raw.check_in_date, raw.fecha_entrada), departure: first(raw.departure, raw.check_out, raw.check_out_date, raw.fecha_salida), nightly_rate: nightlyRate, channel: first(raw.channel, raw.canal), check_in_time: first(raw.check_in_time, raw.hora_check_in), check_out_time: first(raw.check_out_time, raw.hora_check_out) };
   }
-  return raw;
+  return null;
 }
 
 function parseModelJson(content: string) {

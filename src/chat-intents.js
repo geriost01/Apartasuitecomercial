@@ -15,7 +15,7 @@ export function classifyChatCommand(text) {
 
   const all = /\b(todo\w*|toda\s+la\s+informacion|base\s+completa)\b/.test(value)
   if (!destructive || !all) return null
-  if (/\b(chat|conversacion|mensaje\w*)\b/.test(value)) return 'clarify_chat'
+  if (/\b(chat|conversacion|mensaje\w*)\b/.test(value)) return /\b(reserva\w*|edificio|contab\w*|financier\w*)\b/.test(value) ? 'clarify_chat' : 'clear_chat'
   if (/\b(suite|apartamento|apto)\s*#?\s*\d{2,4}\b/.test(value)) return 'clarify_suite'
   return 'prepare_delete'
 }
