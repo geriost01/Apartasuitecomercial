@@ -716,3 +716,4 @@ html[data-theme="violet"] .danger-action:hover:not(:disabled){color:#fff5f7!impo
 .guest-charge-form input,.guest-charge-form select{font-size:16px;min-height:40px}
 .guest-charge-form button{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:5px}
 @media(max-width:520px){.guest-charge-form{grid-template-columns:1fr}}
+.guest-charges-report-total { display:flex; justify-content:flex-end; gap:1rem; padding:1rem 1.25rem; font-size:.9rem; border-top:1px solid var(--border, #deded8); }
