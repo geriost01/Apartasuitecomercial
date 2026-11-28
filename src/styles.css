@@ -452,3 +452,47 @@ html[data-theme="forest"] .unit-detail-info span,html[data-theme="forest"] .unit
 .danger-action:hover{background:#fff0f0!important}
 .staff-create-form{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin:16px 0}
 @media(max-width:760px){.staff-create-form{grid-template-columns:1fr}.staff-create-form .primary-btn{width:100%}}
+
+/* La agenda es la pantalla principal de administración. */
+.calendar-mode .sidebar{transform:translateX(calc(-100% + 10px));transition:transform .22s ease;box-shadow:8px 0 24px #1113}
+.calendar-mode .sidebar:hover,.calendar-mode .sidebar:focus-within,.calendar-mode .sidebar.sidebar-open{transform:translateX(0)}
+.calendar-mode .main-content{margin-left:0;min-height:100vh}
+.calendar-mode .calendar-topbar{height:48px;padding:0 18px;justify-content:flex-end;background:var(--paper);border-bottom:1px solid var(--line)}
+.calendar-mode .calendar-topbar .breadcrumb,.calendar-mode .calendar-topbar .live-pill,.calendar-mode .calendar-topbar .today-date,.calendar-mode .calendar-topbar .mobile-header-logo{display:none}
+.calendar-mode .calendar-topbar .mobile-menu{display:grid;position:absolute;left:12px;top:7px;background:var(--paper);border:1px solid var(--line);z-index:12}
+.calendar-mode .calendar-topbar .top-actions{gap:10px}
+.calendar-mode .calendar-page-content{max-width:none;height:calc(100vh - 48px);padding:12px 16px 16px;display:flex;flex-direction:column;overflow:hidden}
+.calendar-mode .page-heading[hidden]{display:none}
+.calendar-mode .demo-banner{flex:none;margin-bottom:8px;padding:7px 11px}
+.calendar-app-panel{flex:1;min-height:0;display:flex;flex-direction:column;padding:12px 14px;border-radius:12px;overflow:hidden}
+.calendar-app-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 2px 10px;border-bottom:1px solid var(--line);flex:none}
+.calendar-app-title .eyebrow{margin-bottom:3px}.calendar-app-title h1{margin:0;color:var(--ink);font-size:20px;letter-spacing:-.5px}.calendar-app-title>p:last-child{margin:3px 0 0;color:var(--muted);font-size:10px}
+.calendar-app-controls{display:flex;align-items:center;gap:8px}.calendar-app-controls>b{text-transform:capitalize;min-width:118px;text-align:center;font-size:12px;color:var(--ink)}
+.calendar-app-controls .month-select{width:32px;height:32px;background:var(--paper);border-color:var(--line);color:var(--ink)}
+.calendar-search{width:170px;min-height:34px}
+.calendar-app-panel .booking-calendar-wrap{flex:1;min-height:0;display:flex;flex-direction:column;padding-top:8px}
+.calendar-app-panel .booking-calendar-legend{flex:none;padding-bottom:6px}
+.calendar-app-panel .calendar-hint{margin:2px 0 6px;flex:none}
+.calendar-app-panel .booking-calendar-scroll{flex:1;min-height:0;overflow:auto}
+.calendar-app-panel .booking-calendar{min-height:100%}
+.calendar-mode .calendar-app-panel .booking-calendar-scroll::-webkit-scrollbar{width:8px;height:8px}
+.calendar-mode .calendar-app-panel .booking-calendar-scroll::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+@media(max-width:760px){
+ .calendar-mode .calendar-topbar{height:48px;padding:0 9px}
+ .calendar-mode .calendar-topbar .mobile-menu{left:8px}
+ .calendar-mode .calendar-page-content{height:calc(100dvh - 48px);padding:7px 7px 9px;overflow:hidden}
+ .calendar-mode .demo-banner{gap:6px;padding:6px 8px}.calendar-mode .demo-banner small{font-size:9px}
+ .calendar-app-panel{padding:9px 8px;border-radius:10px}
+ .calendar-app-toolbar{align-items:flex-start;flex-direction:column;gap:9px;padding:2px 1px 9px}
+ .calendar-app-title h1{font-size:17px}.calendar-app-title>p:last-child{font-size:9px}
+ .calendar-app-controls{width:100%;gap:5px;flex-wrap:wrap}
+ .calendar-app-controls>b{flex:1;min-width:90px}
+ .calendar-search{order:3;width:100%;height:34px}
+ .calendar-app-controls .primary-btn{margin-left:auto;min-height:34px;padding:0 9px;font-size:10px}
+ .calendar-app-panel .booking-calendar-wrap{padding-top:7px}
+ .calendar-app-panel .calendar-hint{font-size:9px;line-height:1.35}
+ .calendar-app-panel .booking-calendar-legend{gap:6px 10px;font-size:9px;flex-wrap:wrap}
+ .calendar-mode .sidebar{transform:translateX(-100%)}
+ .calendar-mode .sidebar.sidebar-open{transform:translateX(0)}
+}
+@media(prefers-reduced-motion:reduce){.calendar-mode .sidebar{transition:none}}
