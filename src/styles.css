@@ -407,3 +407,48 @@ html[data-theme="violet"] .booking-state-card.state-inhouse{background:#2e4037;c
 html[data-theme="violet"] .booking-state-card.state-finished{background:#34343a;color:#d4d2db;border-color:#505057}
 html[data-theme="violet"] .booking-state-card.state-cancelled{background:#482f35;color:#f0c4c8;border-color:#70454d}
 html[data-theme="violet"] .booking-state-card.state-blocked{background:#37363c;color:#dedbe3;border-color:#535159}
+
+/* Paletas alternativas de presentación: el tema claro conserva sus colores originales. */
+.theme-control{position:relative}
+.theme-menu{position:absolute;top:calc(100% + 8px);right:0;z-index:25;display:grid;gap:4px;min-width:150px;padding:7px;background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px #10182024}
+.theme-option{display:flex;align-items:center;gap:9px;padding:8px 10px;border:0;border-radius:7px;background:transparent;color:var(--ink);text-align:left;font-size:11px}
+.theme-option.selected,.theme-option:hover{background:var(--green-soft);color:var(--green-deep)}
+.theme-option svg:last-child{margin-left:auto}
+.demo-mode-toggle{display:flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:10px;font-weight:650}
+.demo-mode-toggle.active{background:#fff1cf;border-color:#e4bd66;color:#6a4a12}
+.demo-banner{display:flex;align-items:center;gap:12px;margin:0 0 18px;padding:12px 14px;border:1px solid #e4bd66;border-radius:10px;background:#fff7df;color:#68480e}
+.demo-banner>span{display:grid;gap:3px;flex:1}.demo-banner b{font-size:11px;letter-spacing:.04em}.demo-banner small{font-size:10px}.demo-banner button{border:0;background:transparent;color:inherit;font-size:10px;font-weight:700;text-decoration:underline}
+.demo-mode-toggle:disabled,.add-booking:disabled,.table-tools button:disabled{opacity:.45;cursor:not-allowed}
+html[data-theme="violet"] .theme-menu,html[data-theme="sunset"] .theme-menu,html[data-theme="forest"] .theme-menu{background:var(--paper);border-color:var(--line)}
+html[data-theme="violet"] .demo-banner,html[data-theme="sunset"] .demo-banner,html[data-theme="forest"] .demo-banner{background:#342b1e;border-color:#76603a;color:#f4dca7}
+html[data-theme="sunset"]{--green:#dda36e;--green-deep:#b46d3d;--green-soft:#44352d;--gold:#e3b26f;--ink:#f4ede5;--muted:#c2b2a2;--line:#534237;--paper:#302721;--bg:#251e1a}
+html[data-theme="sunset"] body,html[data-theme="sunset"] .main-content{background:#251e1a;color:#f4ede5}
+html[data-theme="sunset"] .sidebar,html[data-theme="sunset"] .topbar{background:#2d241f;border-color:#534237;color:#f4ede5}
+html[data-theme="sunset"] .panel,html[data-theme="sunset"] .metric-card,html[data-theme="sunset"] .request-card,html[data-theme="sunset"] .modal-card{background:#302721;border-color:#534237;color:#f4ede5}
+html[data-theme="sunset"] .page-heading h1,html[data-theme="sunset"] .panel-heading h2,html[data-theme="sunset"] .metric-card>strong,html[data-theme="sunset"] .modal-head h2{color:#fff4e7}
+html[data-theme="sunset"] .page-heading>div>p:last-child,html[data-theme="sunset"] .panel-heading p,html[data-theme="sunset"] .muted{color:#c2b2a2}
+html[data-theme="sunset"] .nav-link,html[data-theme="sunset"] th,html[data-theme="sunset"] td{color:#e7d9cb}
+html[data-theme="sunset"] .nav-active,html[data-theme="sunset"] .unit-occupied{background:#44352d;border-color:#67503e;color:#f0bd91}
+html[data-theme="sunset"] .primary-btn,html[data-theme="sunset"] .accounting-chat-launcher{background:#9a5e3c;color:#fff}
+html[data-theme="sunset"] .secondary-btn,html[data-theme="sunset"] .theme-toggle{background:#44352d;border-color:#67503e;color:#f2c9a7}
+html[data-theme="sunset"] .field-label input,html[data-theme="sunset"] .field-label select,html[data-theme="sunset"] .field-label textarea,html[data-theme="sunset"] .login-form input{background:#251e1a;border-color:#655140;color:#f4ede5}
+html[data-theme="sunset"] .unit-detail-card,html[data-theme="sunset"] .booking-state-card{background:#302721;border-color:#534237;color:#f4ede5}
+html[data-theme="sunset"] .unit-detail-info span,html[data-theme="sunset"] .unit-detail-foot,html[data-theme="sunset"] .unit-occupancy{color:#c8b9aa}
+html[data-theme="forest"]{--green:#a4c48a;--green-deep:#6f9a5d;--green-soft:#304034;--gold:#c7b783;--ink:#eaf0e7;--muted:#acb9a7;--line:#3b4a3a;--paper:#293329;--bg:#202820}
+html[data-theme="forest"] body,html[data-theme="forest"] .main-content{background:#202820;color:#eaf0e7}
+html[data-theme="forest"] .sidebar,html[data-theme="forest"] .topbar{background:#252e25;border-color:#3b4a3a;color:#eaf0e7}
+html[data-theme="forest"] .panel,html[data-theme="forest"] .metric-card,html[data-theme="forest"] .request-card,html[data-theme="forest"] .modal-card{background:#293329;border-color:#3b4a3a;color:#eaf0e7}
+html[data-theme="forest"] .page-heading h1,html[data-theme="forest"] .panel-heading h2,html[data-theme="forest"] .metric-card>strong,html[data-theme="forest"] .modal-head h2{color:#f0f5ed}
+html[data-theme="forest"] .page-heading>div>p:last-child,html[data-theme="forest"] .panel-heading p,html[data-theme="forest"] .muted{color:#acb9a7}
+html[data-theme="forest"] .nav-link,html[data-theme="forest"] th,html[data-theme="forest"] td{color:#dce7d8}
+html[data-theme="forest"] .nav-active,html[data-theme="forest"] .unit-occupied{background:#304034;border-color:#49614a;color:#c1dfad}
+html[data-theme="forest"] .primary-btn,html[data-theme="forest"] .accounting-chat-launcher{background:#52784a;color:#fff}
+html[data-theme="forest"] .secondary-btn,html[data-theme="forest"] .theme-toggle{background:#304034;border-color:#49614a;color:#cce1b9}
+html[data-theme="forest"] .field-label input,html[data-theme="forest"] .field-label select,html[data-theme="forest"] .field-label textarea,html[data-theme="forest"] .login-form input{background:#202820;border-color:#4a5a48;color:#eaf0e7}
+html[data-theme="forest"] .unit-detail-card,html[data-theme="forest"] .booking-state-card{background:#293329;border-color:#3b4a3a;color:#eaf0e7}
+html[data-theme="forest"] .unit-detail-info span,html[data-theme="forest"] .unit-detail-foot,html[data-theme="forest"] .unit-occupancy{color:#afbea9}
+@media(max-width:760px){.demo-mode-toggle{padding:6px 8px;font-size:9px}.demo-mode-toggle span{display:none}.demo-banner{align-items:flex-start}.demo-banner button{max-width:85px;text-align:right}}
+.danger-action{color:#9b3c3c!important;border:1px solid #e7caca!important}
+.danger-action:hover{background:#fff0f0!important}
+.staff-create-form{display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;margin:16px 0}
+@media(max-width:760px){.staff-create-form{grid-template-columns:1fr}.staff-create-form .primary-btn{width:100%}}
