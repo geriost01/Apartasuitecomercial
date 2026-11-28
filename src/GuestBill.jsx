@@ -7,6 +7,8 @@ const date = value => value ? new Intl.DateTimeFormat('es-CO', { day:'numeric', 
 const makeItem = (description = '', price = 0) => ({ id:crypto.randomUUID(), included:true, description, quantity:1, price, iva:false, rate:19 })
 const stayItem = booking => makeItem(`Hospedaje suite ${booking.unit} · ${booking.arrival} al ${booking.departure}`, Number(booking.amount || 0))
 const loadLogo = () => new Promise(resolve => { const img = new Image(); img.onload=()=>{try{const canvas=document.createElement('canvas');canvas.width=img.naturalWidth;canvas.height=img.naturalHeight;canvas.getContext('2d').drawImage(img,0,0);resolve(canvas.toDataURL('image/png'))}catch{resolve(null)}};img.onerror=()=>resolve(null);img.src='/aparta-suite-logo.webp' })
+const demoImage = type => {const canvas=document.createElement('canvas');canvas.width=500;canvas.height=200;const ctx=canvas.getContext('2d');ctx.strokeStyle='#305c50';ctx.fillStyle='#305c50';if(type==='seal'){ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(250,100,106,83,0,0,2*Math.PI);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(250,100,95,72,0,0,2*Math.PI);ctx.stroke();ctx.textAlign='center';ctx.font='bold 19px sans-serif';ctx.fillText('APARTA SUITE',250,81);ctx.fillText('LA FLORA',250,112);ctx.font='13px sans-serif';ctx.fillText('SELLO DE MUESTRA',250,139)}else{ctx.font='italic 46px cursive';ctx.fillText('Firma de prueba',30,100);ctx.beginPath();ctx.moveTo(30,112);ctx.bezierCurveTo(165,130,300,94,455,120);ctx.stroke();ctx.font='17px sans-serif';ctx.fillText('PRESENTACIÓN · SIN VALIDEZ',50,158)}return canvas.toDataURL('image/png')}
+const demoIssuer = {issuer_name:'Aparta Suite La Flora',issuer_city:'Santiago de Cali',issuer_address:'Calle 49 Norte # 5N-68 · dirección de referencia',signer:'Firma de prueba',title:'Presentación del proyecto'}
 const paidFor = (booking, ledger) => ledger.filter(row => row.booking_id === booking.id && ['receipt','refund'].includes(row.kind)).reduce((sum,row) => sum + (row.kind === 'receipt' ? 1 : -1) * Number(row.amount || 0) * (row.reversal_of ? -1 : 1), 0)
 
 export default function GuestBill({ bookings, ledger, charges, apartments, signing, initialBooking, onClose }) {
@@ -18,10 +20,11 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   const [items,setItems] = useState(()=>itemsFor(initialBooking))
   const [error,setError] = useState('')
   const [copied,setCopied] = useState(false)
+  const [previewDemo,setPreviewDemo] = useState(!signing?.signature || !signing?.seal || !signing?.issuer_address)
   const booking = bookings.find(row => row.id === bookingId)
   const paid = booking ? Math.max(0,paidFor(booking,ledger)) : 0
   const totals = billTotals(items,paid)
-  const demo = Boolean(booking?.is_demo)
+  const demo = Boolean(booking?.is_demo || previewDemo)
   const chooseBooking = id => {
     const next = bookings.find(row => row.id === id)
     setBookingId(id)
@@ -32,6 +35,7 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   const update = (id, key, value) => setItems(list => list.map(item => item.id === id ? {...item,[key]:value} : item))
   const add = kind => setItems(list => [...list,makeItem(kind === 'snack' ? 'Consumo de minibar / confitería' : kind === 'cleaning' ? 'Aseo adicional' : '')])
   const copyForDian = async () => {
+    if (demo) { setError('Los datos de presentación no se copian para emitir una factura real en la DIAN. Desactiva la vista de muestra y configura los datos oficiales.'); return }
     if (!name.trim() || !validBill(items,paid)) { setError('Completa el cliente y al menos un concepto con valor antes de copiar.'); return }
     setError('')
     const selected = items.filter(item=>item.included)
@@ -46,17 +50,17 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   const generate = async mode => {
     if (booking && !booking.is_demo && booking.status !== 'checked_out') { setError('Finaliza la estancia antes de generar la cuenta de salida.'); return }
     if (!name.trim() || !validBill(items,paid)) { setError('Escribe el cliente y revisa conceptos, cantidades, valores e IVA. Selecciona al menos un concepto con valor.'); return }
-    if (!signing?.issuer_address?.trim() || !signing?.issuer_name?.trim()) { setError('Configura el nombre y la dirección reales del establecimiento en Configuración → Datos oficiales antes de imprimir.'); return }
+    if (!demo && (!signing?.issuer_address?.trim() || !signing?.issuer_name?.trim() || !signing?.signature || !signing?.seal)) { setError('Configura nombre, dirección, firma y sello reales en Configuración → Datos oficiales antes de imprimir una cuenta real.'); return }
     setError('')
     // Open while the click still has user activation; browsers block delayed popups.
     const printWindow = mode === 'print' ? window.open('', '_blank') : null
     const {default:jsPDF} = await import('jspdf')
-    const doc = new jsPDF(), selected = items.filter(item => item.included), logo = await loadLogo()
+    const doc = new jsPDF(), selected = items.filter(item => item.included), logo = await loadLogo(), issuer = demo ? demoIssuer : signing
     doc.setFillColor(39,68,60); doc.rect(0,0,210,43,'F')
-    if(logo) try { doc.addImage(logo,'PNG',16,7,28,28) } catch { /* keep text header */ }
-    doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.text(String(signing.issuer_name).slice(0,60),logo?50:16,17,{maxWidth:145})
-    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(`${signing.issuer_document ? `NIT / documento ${signing.issuer_document} · ` : ''}${signing.issuer_city||'Cali'}`,logo?50:16,25,{maxWidth:145})
-    doc.text(String(signing.issuer_address).slice(0,150),logo?50:16,33,{maxWidth:145})
+    if(logo) try { doc.addImage(logo,'PNG',16,12,28,18.7) } catch { /* keep text header */ }
+    doc.setTextColor(255,255,255); doc.setFontSize(16); doc.setFont('helvetica','bold'); doc.text(String(issuer.issuer_name).slice(0,60),logo?50:16,17,{maxWidth:145})
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.text(`${issuer.issuer_document ? `NIT / documento ${issuer.issuer_document} · ` : ''}${issuer.issuer_city||'Cali'}`,logo?50:16,25,{maxWidth:145})
+    doc.text(String(issuer.issuer_address).slice(0,150),logo?50:16,33,{maxWidth:145})
     doc.setTextColor(39,47,43); doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.text(demo?'CUENTA DE MUESTRA':'CUENTA DETALLADA DE HOSPEDAJE',16,55)
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(88,96,89)
     doc.text(`Emitida: ${new Intl.DateTimeFormat('es-CO',{dateStyle:'long',timeZone:'America/Bogota'}).format(new Date())}`,16,65)
@@ -84,10 +88,10 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
     }
     if (y > 220) { doc.addPage(); y = 22 }
     doc.setDrawColor(210,219,211); doc.line(16,y+3,194,y+3); y+=10
-    if(signing?.signature) try { doc.addImage(signing.signature,'PNG',18,y,48,19) } catch { /* omit invalid image */ }
-    if(signing?.seal) try { doc.addImage(signing.seal,'PNG',153,y-1,29,29) } catch { /* omit invalid image */ }
-    doc.setTextColor(68,78,70); doc.setFontSize(9); doc.text(String(signing?.signer||'Administración').slice(0,90),16,y+25)
-    doc.setFontSize(8); doc.text(String(signing?.title||'Administración').slice(0,90),16,y+30)
+    try { doc.addImage(demo?demoImage('signature'):signing.signature,'PNG',18,y,48,19) } catch { /* omit invalid image */ }
+    try { doc.addImage(demo?demoImage('seal'):signing.seal,'PNG',153,y-1,29,29) } catch { /* omit invalid image */ }
+    doc.setTextColor(68,78,70); doc.setFontSize(9); doc.text(String(issuer.signer||'Administración').slice(0,90),16,y+25)
+    doc.setFontSize(8); doc.text(String(issuer.title||'Administración').slice(0,90),16,y+30)
     doc.setTextColor(143,78,59); doc.text('Cuenta comercial informativa. No es factura electrónica validada por la DIAN.',16,y+42,{maxWidth:178})
     if (demo) doc.text('DATOS FICTICIOS DE PRESENTACIÓN · SIN VALIDEZ FISCAL',16,y+50)
     const fileName = `cuenta-huesped-${(booking ? getUnit(booking.apartment_id) : name.trim()).replace(/[^\w-]/g,'-')}.pdf`
@@ -102,14 +106,15 @@ export default function GuestBill({ bookings, ledger, charges, apartments, signi
   }
   return <div className="modal-scrim" onMouseDown={onClose}><section className="modal-card guest-bill-modal" onMouseDown={event=>event.stopPropagation()} role="dialog" aria-modal="true" aria-label="Cuenta para el huésped">
     <div className="modal-head"><div><h2>Cuenta para el huésped</h2><p>Escoge solo lo que vas a cobrar. Abre el PDF para imprimirlo.</p></div><button className="icon-btn" aria-label="Cerrar" onClick={onClose}><X size={18}/></button></div>
-    <p className="guest-bill-notice">La Facturación Gratuita DIAN no importa estos datos desde el portal. Emite y valida allá la factura para que tenga validez fiscal; esta cuenta sirve como detalle para transcribirla.</p>
+    <p className="settings-hint">Cuenta comercial para entregar al huésped. No reemplaza una factura electrónica validada por la DIAN.</p>
     <div className="guest-bill-fields"><label className="field-label">Reserva finalizada (opcional)<select value={bookingId} onChange={event=>chooseBooking(event.target.value)}><option value="">Cuenta sin reserva</option>{bookings.filter(row=>row.status==='checked_out').map(row=><option key={row.id} value={row.id}>Suite {getUnit(row.apartment_id)} · {row.guest_name} · {row.arrival}</option>)}</select></label><label className="field-label">Cliente<input value={name} onChange={event=>setName(event.target.value)} maxLength="100" placeholder="Nombre o razón social" required/></label><label className="field-label">Documento del cliente (opcional)<input value={documentId} onChange={event=>setDocumentId(event.target.value)} maxLength="35" placeholder="Cédula o NIT"/></label></div>
     <div className="guest-bill-items"><h3>Conceptos a incluir</h3>{items.map(item=><div className="guest-bill-item" key={item.id}><label className="guest-bill-check"><input type="checkbox" checked={item.included} onChange={event=>update(item.id,'included',event.target.checked)}/> Incluir</label><label className="field-label guest-bill-description">Concepto<input value={item.description} maxLength="160" disabled={item.saved} onChange={event=>update(item.id,'description',event.target.value)} placeholder="Hospedaje, gaseosa, aseo extra..."/></label><label className="field-label">Cantidad<input type="number" min="1" max="1000" step="1" disabled={item.saved} value={item.quantity} onChange={event=>update(item.id,'quantity',event.target.value)}/></label><label className="field-label">Valor unitario antes de IVA<input type="number" min="0" step="1" disabled={item.saved} value={item.price} onChange={event=>update(item.id,'price',event.target.value)}/></label><label className="guest-bill-check"><input type="checkbox" checked={item.iva} onChange={event=>update(item.id,'iva',event.target.checked)}/> Cobrar IVA</label>{item.iva&&<label className="field-label">Tarifa IVA (%)<input type="number" min="0" max="100" step="0.01" value={item.rate} onChange={event=>update(item.id,'rate',event.target.value)}/></label>}<b>{COP(Number(item.quantity||0)*Number(item.price||0) + (item.iva ? Math.round(Number(item.quantity||0)*Number(item.price||0)*Number(item.rate||0)/100) : 0))}</b>{!item.saved&&<button type="button" className="icon-btn" aria-label={`Quitar ${item.description||'concepto'}`} onClick={()=>setItems(list=>list.filter(row=>row.id!==item.id))}><X size={15}/></button>}</div>)}</div>
     <div className="guest-bill-add"><button className="secondary-btn" onClick={()=>add('snack')}><Plus size={15}/> Confitería</button><button className="secondary-btn" onClick={()=>add('cleaning')}><Plus size={15}/> Aseo extra</button><button className="secondary-btn" onClick={()=>add('other')}><Plus size={15}/> Otro concepto</button></div>
-    <div className="guest-bill-free-tools"><button type="button" className="secondary-btn" onClick={copyForDian}><Copy size={15}/>{copied?'Datos copiados':'Copiar datos para DIAN'}</button><a className="secondary-btn" href="https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/facturacion-gratuita-dian/" target="_blank" rel="noreferrer"><ExternalLink size={15}/> Guía gratuita DIAN</a></div>
+    <details><summary>¿El cliente necesita factura electrónica?</summary><p className="settings-hint">Copia los datos y emite la factura en el servicio gratuito de la DIAN. Esta cuenta no se sincroniza automáticamente.</p><div className="guest-bill-free-tools"><button type="button" className="secondary-btn" onClick={copyForDian}><Copy size={15}/>{copied?'Datos copiados':'Copiar datos para DIAN'}</button><a className="secondary-btn" href="https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/facturacion-gratuita-dian/" target="_blank" rel="noreferrer"><ExternalLink size={15}/> Guía gratuita DIAN</a></div></details>
     <div className="guest-bill-summary"><span>Subtotal <b>{COP(totals.subtotal)}</b></span><span>IVA elegido <b>{COP(totals.iva)}</b></span><span>Total <b>{COP(totals.total)}</b></span>{booking&&<><span>Pagos registrados <b>{COP(totals.paid)}</b></span><span>Saldo de esta cuenta <b>{COP(totals.balance)}</b></span></>}</div>
     {booking&&<p className="settings-hint">Los consumos guardados durante la estancia aparecen aquí. El IVA y los conceptos añadidos solo para este PDF no modifican la reserva ni registran dinero recibido; anota el pago por separado.</p>}
-    {demo&&<p className="guest-bill-notice">Esta reserva es ficticia; el PDF llevará marca de muestra.</p>}{error&&<p className="form-error" role="alert">{error}</p>}
+    <label className="guest-bill-check"><input type="checkbox" checked={demo} disabled={Boolean(booking?.is_demo)} onChange={event=>setPreviewDemo(event.target.checked)}/> Vista de presentación con firma y sello de prueba</label>
+    {demo&&<p className="guest-bill-notice">Documento de muestra: firma, sello y dirección de referencia. Sin validez fiscal. Para una cuenta real, desactiva esta opción y carga tus datos oficiales en Configuración.</p>}{error&&<p className="form-error" role="alert">{error}</p>}
     <div className="modal-actions"><button className="secondary-btn" onClick={onClose}>Cancelar</button><button className="secondary-btn" onClick={()=>generate('download')}><Download size={16}/> Descargar PDF</button><button className="primary-btn" onClick={()=>generate('print')}><Printer size={16}/> Abrir para imprimir</button></div>
   </section></div>
 }
