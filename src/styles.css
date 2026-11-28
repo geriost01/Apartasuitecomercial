@@ -297,3 +297,113 @@ html:not([data-theme="violet"]) .panel-heading p,html:not([data-theme="violet"])
 @media(max-width:600px){.notification-popover{position:fixed;top:72px;right:12px}}
 html[data-theme="violet"] .notification-popover{background:#24212b;color:#f4effb;border-color:#494252}
 html[data-theme="violet"] .notification-title,html[data-theme="violet"] .notification-item{border-color:#494252}
+
+/* Agenda mensual de reservas y estados de pago */
+.booking-view-toggle{display:inline-flex;gap:3px;padding:3px;border:1px solid #e6e8df;border-radius:8px;background:#f5f6f2}
+.booking-view-toggle button{min-height:32px;padding:0 11px;border:0;border-radius:6px;background:transparent;color:#626a61;font-size:10px;font-weight:700;cursor:pointer}
+.booking-view-toggle button.active{background:#fff;color:#315749;box-shadow:0 1px 4px #1b271b1c}
+.booking-calendar-wrap{display:grid;gap:10px;margin-top:14px}
+.booking-calendar-legend{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.booking-calendar-legend>span{display:inline-flex;align-items:center;min-height:25px;padding:4px 9px;border-radius:20px;font-size:9px;font-weight:700}
+.calendar-hint{margin:0;color:#757b72;font-size:10px;line-height:1.5}
+.booking-calendar-scroll{max-width:100%;overflow:auto;border:1px solid #e7e8e1;border-radius:9px;overscroll-behavior-x:contain;scrollbar-width:thin}
+.booking-calendar{display:grid;grid-template-columns:70px repeat(var(--calendar-days),minmax(34px,1fr));min-width:max-content;background:#fff}
+.calendar-corner,.calendar-day-head{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:center;min-height:46px;border-right:1px solid #e8e9e3;border-bottom:1px solid #dfe2da;background:#f5f7f3}
+.calendar-corner{left:0;z-index:6;justify-content:flex-start;padding-left:12px;color:#526253;font-size:10px;font-weight:800}
+.calendar-day-head{flex-direction:column;gap:2px;color:#657064}
+.calendar-day-head small{font-size:8px;text-transform:uppercase}
+.calendar-day-head b{font-size:10px;color:#35463a}
+.calendar-suite{position:sticky;left:0;z-index:3;display:flex;align-items:center;justify-content:flex-start;padding-left:12px;min-height:48px;border-right:1px solid #e6e8e1;border-bottom:1px solid #eceee8;background:#fff;color:#35463a;font-size:10px;font-weight:800}
+.booking-calendar-row{position:relative;display:grid;grid-column:2/-1;grid-row:auto;grid-auto-rows:48px;min-height:48px;border-bottom:1px solid #eceee8;background:#fff}
+.calendar-day-cell{grid-row:1;min-height:48px;border-right:1px solid #eff0eb;background:#fff}
+.calendar-day-cell.calendar-weekend{background:#fafbf8}
+.calendar-booking{z-index:2;align-self:center;display:flex;flex-direction:column;justify-content:center;min-width:0;height:36px;margin:0 2px;padding:3px 7px;border:1px solid transparent;border-radius:6px;text-align:left;overflow:hidden;cursor:pointer}
+.calendar-booking b,.calendar-booking small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.calendar-booking b{font-size:9px;line-height:1.2}
+.calendar-booking small{font-size:8px;line-height:1.2;opacity:.9}
+.calendar-blocked-key,.calendar-booking.calendar-blocked{background:#e7e8eb;color:#41464c;border-color:#c9cbd0}
+.payment-pending,.calendar-booking.payment-pending{background:#fff0e8;color:#873f20;border-color:#f3c5ad}
+.payment-partial,.calendar-booking.payment-partial{background:#fff5d8;color:#72520c;border-color:#edda95}
+.payment-paid,.calendar-booking.payment-paid{background:#e3f3e8;color:#24613c;border-color:#a8d6b5}
+.payment-credit,.calendar-booking.payment-credit{background:#e9e4fa;color:#523b91;border-color:#c5b8ef}
+.payment-no-charge{background:#edf0f2;color:#515c66;border-color:#d2d8dd}
+.payment-cancelled{background:#f5e5e6;color:#803f46;border-color:#e5bfc3}
+.payment-status-badge{display:inline-flex;align-items:center;width:max-content;max-width:100%;padding:4px 8px;border:1px solid transparent;border-radius:18px;font-size:9px;font-weight:700;white-space:nowrap}
+.payment-row-amount{display:block;margin-top:4px;color:#696f68;font-size:9px;white-space:nowrap}
+.booking-open-btn{white-space:nowrap}
+.booking-detail-content{display:grid;gap:15px}
+.booking-state-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.booking-state-card{display:grid;gap:6px;align-content:start;min-width:0;padding:12px;border:1px solid transparent;border-radius:10px}
+.booking-state-card small{font-size:8px;font-weight:800;letter-spacing:.45px;opacity:.86}
+.booking-state-card b{font-size:14px}
+.booking-state-card span{font-size:10px;line-height:1.4}
+.booking-state-card.state-reserved{background:#e9eef5;color:#354e68;border-color:#c7d3e2}
+.booking-state-card.payment-pending{background:#fff0e8;color:#873f20;border-color:#f3c5ad}
+.booking-state-card.payment-partial{background:#fff5d8;color:#72520c;border-color:#edda95}
+.booking-state-card.payment-paid{background:#e3f3e8;color:#24613c;border-color:#a8d6b5}
+.booking-state-card.payment-credit{background:#e9e4fa;color:#523b91;border-color:#c5b8ef}
+.booking-payment-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.booking-payment-totals>div{display:grid;gap:5px;padding:10px;border:1px solid #e8e9e2;border-radius:8px;background:#fafbf8}
+.booking-payment-totals small{color:#697168;font-size:9px;line-height:1.35}
+.booking-payment-totals b{color:#35463a;font-size:12px;overflow-wrap:anywhere}
+.booking-payment-history{padding-top:12px;border-top:1px solid #e8e9e2}
+.booking-history-heading{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.booking-history-heading h3{margin:0;color:#35463a;font-size:12px}
+.booking-history-heading>span{display:grid;place-items:center;min-width:20px;height:20px;border-radius:50%;background:#edf0e9;color:#526253;font-size:9px;font-weight:700}
+.booking-payment-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:9px;padding:9px 0;border-top:1px solid #eff0eb}
+.booking-payment-row>span b,.booking-payment-row>span small{display:block}
+.booking-payment-row>span b{font-size:10px;color:#36453a}
+.booking-payment-row>span small{margin-top:4px;color:#74796f;font-size:9px}
+.booking-payment-row> b{font-size:10px;color:#35463a;white-space:nowrap}
+.booking-document-note{margin:0;padding:9px 10px;border-radius:7px;background:#f5f4ef;color:#6b695f;font-size:9px;line-height:1.5}
+.booking-detail-actions{flex-wrap:wrap}
+html[data-theme="violet"] .booking-view-toggle{background:#25222b;border-color:#49424f}
+html[data-theme="violet"] .booking-view-toggle button{color:#c4bdce}
+html[data-theme="violet"] .booking-view-toggle button.active{background:#40364b;color:#f0e9fc}
+html[data-theme="violet"] .booking-calendar-scroll{border-color:#48414f}
+html[data-theme="violet"] .booking-calendar{background:#211e26}
+html[data-theme="violet"] .calendar-corner,html[data-theme="violet"] .calendar-day-head{background:#302b37;border-color:#49424f;color:#d0c8d9}
+html[data-theme="violet"] .calendar-day-head b{color:#f0eaf7}
+html[data-theme="violet"] .calendar-suite{background:#29252f;border-color:#49424f;color:#f0eaf7}
+html[data-theme="violet"] .booking-calendar-row{border-color:#49424f;background:#211e26}
+html[data-theme="violet"] .calendar-day-cell{background:#211e26;border-color:#38323f}
+html[data-theme="violet"] .calendar-day-cell.calendar-weekend{background:#28242e}
+html[data-theme="violet"] .calendar-hint,html[data-theme="violet"] .payment-row-amount{color:#c4bdce}
+html[data-theme="violet"] .booking-state-card.state-reserved{background:#293442;color:#d7e5f5;border-color:#41536b}
+html[data-theme="violet"] .booking-payment-totals>div{background:#29252f;border-color:#49424f}
+html[data-theme="violet"] .booking-payment-totals small{color:#c4bdce}
+html[data-theme="violet"] .booking-payment-totals b,html[data-theme="violet"] .booking-payment-row>span b,html[data-theme="violet"] .booking-payment-row> b,html[data-theme="violet"] .booking-history-heading h3{color:#f0eaf7}
+html[data-theme="violet"] .booking-payment-history,html[data-theme="violet"] .booking-payment-row{border-color:#49424f}
+html[data-theme="violet"] .booking-payment-row>span small{color:#c4bdce}
+html[data-theme="violet"] .booking-history-heading>span{background:#3a3343;color:#e1d5f5}
+html[data-theme="violet"] .booking-document-note{background:#302b37;color:#d0c8d9}
+@media(max-width:760px){
+ .booking-calendar-wrap{gap:8px;margin-top:10px}
+ .booking-calendar-legend{gap:5px}
+ .booking-calendar-legend>span{min-height:23px;padding:3px 7px;font-size:8px}
+ .calendar-hint{font-size:9px}
+ .booking-calendar{grid-template-columns:58px repeat(var(--calendar-days),minmax(34px,1fr))}
+ .calendar-corner,.calendar-suite{padding-left:8px}
+ .calendar-day-head{min-height:42px}
+ .booking-calendar-row,.calendar-suite,.calendar-day-cell{min-height:46px;grid-auto-rows:46px}
+ .calendar-booking{height:35px;padding:3px 5px}
+ .calendar-booking b{font-size:8px}
+ .calendar-booking small{font-size:7px}
+ .booking-state-grid{grid-template-columns:1fr}
+ .booking-payment-totals{gap:5px}
+ .booking-payment-totals>div{padding:8px 6px}
+ .booking-payment-totals small{font-size:8px}
+ .booking-payment-totals b{font-size:10px}
+ .booking-payment-row{grid-template-columns:minmax(0,1fr) auto;gap:7px}
+ .booking-payment-row .download-btn{grid-column:2;justify-self:end}
+ .booking-detail-actions>*{flex:1}
+ .table-tools{flex-wrap:wrap;justify-content:flex-end}
+}
+.booking-state-card.state-inhouse{background:#e3f3e8;color:#24613c;border-color:#a8d6b5}
+.booking-state-card.state-finished{background:#edf0f2;color:#515c66;border-color:#d2d8dd}
+.booking-state-card.state-cancelled{background:#f5e5e6;color:#803f46;border-color:#e5bfc3}
+.booking-state-card.state-blocked{background:#e7e8eb;color:#41464c;border-color:#c9cbd0}
+html[data-theme="violet"] .booking-state-card.state-inhouse{background:#2e4037;color:#c0e6cb;border-color:#496c54}
+html[data-theme="violet"] .booking-state-card.state-finished{background:#34343a;color:#d4d2db;border-color:#505057}
+html[data-theme="violet"] .booking-state-card.state-cancelled{background:#482f35;color:#f0c4c8;border-color:#70454d}
+html[data-theme="violet"] .booking-state-card.state-blocked{background:#37363c;color:#dedbe3;border-color:#535159}
