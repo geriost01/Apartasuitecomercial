@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, FileText, Plus, Printer, X } from 'lucide-react'
+import { Copy, Download, ExternalLink, FileText, Plus, Printer, X } from 'lucide-react'
 import { billTotals, validBill } from './guest-bill.js'
 
 const COP = n => new Intl.NumberFormat('es-CO', { style:'currency', currency:'COP', maximumFractionDigits:0 }).format(n)
@@ -16,6 +16,7 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
   const [documentId,setDocumentId] = useState('')
   const [items,setItems] = useState(()=>itemsFor(initialBooking))
   const [error,setError] = useState('')
+  const [copied,setCopied] = useState(false)
   const booking = bookings.find(row => row.id === bookingId)
   const paid = booking ? Math.max(0,paidFor(booking,ledger)) : 0
   const totals = billTotals(items,paid)
@@ -29,6 +30,16 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
   }
   const update = (id, key, value) => setItems(list => list.map(item => item.id === id ? {...item,[key]:value} : item))
   const add = kind => setItems(list => [...list,makeItem(kind === 'snack' ? 'Consumo de minibar / confitería' : kind === 'cleaning' ? 'Aseo adicional' : '')])
+  const copyForDian = async () => {
+    const selected = items.filter(item=>item.included)
+    const lines = selected.map(item=>{
+      const base = Number(item.quantity)*Number(item.price), tax = item.iva ? Math.round(base*Number(item.rate)/100) : 0
+      return `${item.description.trim()} | Cantidad: ${item.quantity} | Unitario: ${COP(Number(item.price))} | IVA: ${item.iva ? `${item.rate}% (${COP(tax)})` : 'No marcado'} | Total: ${COP(base+tax)}`
+    })
+    const text = [`DATOS PARA DIGITAR EN FACTURACIÓN GRATUITA DIAN · No es factura`, `Cliente: ${name.trim()}`, documentId.trim()&&`Documento: ${documentId.trim()}`, booking&&`Suite ${getUnit(booking.apartment_id)} · ${date(booking.arrival)} al ${date(booking.departure)}`, ...lines, `Subtotal: ${COP(totals.subtotal)}`, `IVA seleccionado: ${COP(totals.iva)}`, `Total: ${COP(totals.total)}`, booking&&`Pagos registrados: ${COP(totals.paid)} · Saldo: ${COP(totals.balance)}`].filter(Boolean).join('\n')
+    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(()=>setCopied(false),3000) }
+    catch { setError('No se pudo copiar. Puedes descargar el PDF con el detalle para transcribirlo en la DIAN.') }
+  }
   const generate = async mode => {
     if (booking && !booking.is_demo && booking.status !== 'checked_out') { setError('Finaliza la estancia antes de generar la cuenta de salida.'); return }
     if (!name.trim() || !validBill(items,paid)) { setError('Escribe el cliente y revisa conceptos, cantidades, valores e IVA. Selecciona al menos un concepto con valor.'); return }
@@ -80,10 +91,11 @@ export default function GuestBill({ bookings, ledger, charges, apartments, initi
   }
   return <div className="modal-scrim" onMouseDown={onClose}><section className="modal-card guest-bill-modal" onMouseDown={event=>event.stopPropagation()} role="dialog" aria-modal="true" aria-label="Cuenta para el huésped">
     <div className="modal-head"><div><h2>Cuenta para el huésped</h2><p>Escoge solo lo que vas a cobrar. Abre el PDF para imprimirlo.</p></div><button className="icon-btn" aria-label="Cerrar" onClick={onClose}><X size={18}/></button></div>
-    <p className="guest-bill-notice">Este PDF es una cuenta informativa. Para entregar una factura electrónica fiscal se requiere emitirla y validarla ante la DIAN.</p>
+    <p className="guest-bill-notice">La Facturación Gratuita DIAN no importa estos datos desde el portal. Emite y valida allá la factura para que tenga validez fiscal; esta cuenta sirve como detalle para transcribirla.</p>
     <div className="guest-bill-fields"><label className="field-label">Reserva finalizada (opcional)<select value={bookingId} onChange={event=>chooseBooking(event.target.value)}><option value="">Cuenta sin reserva</option>{bookings.filter(row=>row.status==='checked_out').map(row=><option key={row.id} value={row.id}>Suite {getUnit(row.apartment_id)} · {row.guest_name} · {row.arrival}</option>)}</select></label><label className="field-label">Cliente<input value={name} onChange={event=>setName(event.target.value)} maxLength="100" placeholder="Nombre o razón social" required/></label><label className="field-label">Documento del cliente (opcional)<input value={documentId} onChange={event=>setDocumentId(event.target.value)} maxLength="35" placeholder="Cédula o NIT"/></label></div>
     <div className="guest-bill-items"><h3>Conceptos a incluir</h3>{items.map(item=><div className="guest-bill-item" key={item.id}><label className="guest-bill-check"><input type="checkbox" checked={item.included} onChange={event=>update(item.id,'included',event.target.checked)}/> Incluir</label><label className="field-label guest-bill-description">Concepto<input value={item.description} maxLength="160" disabled={item.saved} onChange={event=>update(item.id,'description',event.target.value)} placeholder="Hospedaje, gaseosa, aseo extra..."/></label><label className="field-label">Cantidad<input type="number" min="1" max="1000" step="1" disabled={item.saved} value={item.quantity} onChange={event=>update(item.id,'quantity',event.target.value)}/></label><label className="field-label">Valor unitario antes de IVA<input type="number" min="0" step="1" disabled={item.saved} value={item.price} onChange={event=>update(item.id,'price',event.target.value)}/></label><label className="guest-bill-check"><input type="checkbox" checked={item.iva} onChange={event=>update(item.id,'iva',event.target.checked)}/> Cobrar IVA</label>{item.iva&&<label className="field-label">Tarifa IVA (%)<input type="number" min="0" max="100" step="0.01" value={item.rate} onChange={event=>update(item.id,'rate',event.target.value)}/></label>}<b>{COP(Number(item.quantity||0)*Number(item.price||0) + (item.iva ? Math.round(Number(item.quantity||0)*Number(item.price||0)*Number(item.rate||0)/100) : 0))}</b>{!item.saved&&<button type="button" className="icon-btn" aria-label={`Quitar ${item.description||'concepto'}`} onClick={()=>setItems(list=>list.filter(row=>row.id!==item.id))}><X size={15}/></button>}</div>)}</div>
     <div className="guest-bill-add"><button className="secondary-btn" onClick={()=>add('snack')}><Plus size={15}/> Confitería</button><button className="secondary-btn" onClick={()=>add('cleaning')}><Plus size={15}/> Aseo extra</button><button className="secondary-btn" onClick={()=>add('other')}><Plus size={15}/> Otro concepto</button></div>
+    <div className="guest-bill-free-tools"><button type="button" className="secondary-btn" onClick={copyForDian}><Copy size={15}/>{copied?'Datos copiados':'Copiar datos para DIAN'}</button><a className="secondary-btn" href="https://micrositios.dian.gov.co/sistema-de-facturacion-electronica/facturacion-gratuita-dian/" target="_blank" rel="noreferrer"><ExternalLink size={15}/> Guía gratuita DIAN</a></div>
     <div className="guest-bill-summary"><span>Subtotal <b>{COP(totals.subtotal)}</b></span><span>IVA elegido <b>{COP(totals.iva)}</b></span><span>Total <b>{COP(totals.total)}</b></span>{booking&&<><span>Pagos registrados <b>{COP(totals.paid)}</b></span><span>Saldo de esta cuenta <b>{COP(totals.balance)}</b></span></>}</div>
     {booking&&<p className="settings-hint">Los consumos guardados durante la estancia aparecen aquí. El IVA y los conceptos añadidos solo para este PDF no modifican la reserva ni registran dinero recibido; anota el pago por separado.</p>}
     {demo&&<p className="guest-bill-notice">Esta reserva es ficticia; el PDF llevará marca de muestra.</p>}{error&&<p className="form-error" role="alert">{error}</p>}
