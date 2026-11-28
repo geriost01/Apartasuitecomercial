@@ -54,8 +54,15 @@ Deno.serve(async (request) => {
       const {error:changeError} = await service.auth.admin.updateUserById(user.id,{password});
       if (changeError) return out(400,{error:"No pudimos cambiar la contraseña. Revisa que cumpla los requisitos."});
       const validAfter = Math.floor(Date.now()/1000)+1;
-      const {error:saveError} = await service.from("owner_access").update({must_change:false,valid_after:validAfter}).eq("user_id",user.id);
-      if (saveError) return out(500,{error:"Contraseña actualizada. Administración debe revisar el acceso a la unidad."});
+      const {data:ownerAccess,error:lookupError} = await service.from("owner_access").select("user_id").eq("user_id",user.id).maybeSingle();
+      if (lookupError) return out(500,{error:"Contraseña actualizada, pero no pudimos verificar el acceso."});
+      if (ownerAccess) {
+        const {error:saveError} = await service.from("owner_access").update({must_change:false,valid_after:validAfter}).eq("user_id",user.id);
+        if (saveError) return out(500,{error:"Contraseña actualizada. Administración debe revisar el acceso a la unidad."});
+      } else {
+        const {data:isStaff,error:staffLookupError} = await service.from("staff").select("user_id").eq("user_id",user.id).maybeSingle();
+        if (staffLookupError || !isStaff) return out(403,{error:"Esta cuenta no tiene acceso activo al portal."});
+      }
       return out(200,{ok:true});
     } finally {
       await release(service,user.id,ticket);
