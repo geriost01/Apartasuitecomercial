@@ -1,17 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240" role="img" aria-label="Sello de Aparta Suite La Flora">
-  <g fill="none" stroke="#285448">
-    <ellipse cx="250" cy="120" rx="232" ry="105" stroke-width="5"/>
-    <ellipse cx="250" cy="120" rx="221" ry="94" stroke-width="1.8"/>
-    <path d="M75 80h350M75 163h350" stroke-width="1.5"/>
-    <path d="M94 53h44m224 0h44M94 188h44m224 0h44" stroke-width="2"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 240" role="img" aria-label="Sello de tinta azul sobre papel de Aparta Suite La Flora">
+  <defs>
+    <filter id="paper-grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.58" numOctaves="3" seed="12" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.13"/></feComponentTransfer>
+    </filter>
+    <filter id="ink-edge" x="-3%" y="-8%" width="106%" height="116%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="8" result="grain"/>
+      <feDisplacementMap in="SourceGraphic" in2="grain" scale="1.15" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <pattern id="dry-ink" width="29" height="23" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="4" r="0.55"/><circle cx="12" cy="16" r="0.7"/>
+      <circle cx="25" cy="8" r="0.45"/><circle cx="19" cy="22" r="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="500" height="240" fill="#f8f5ec"/>
+  <rect width="500" height="240" filter="url(#paper-grain)" opacity="0.28"/>
+  <g transform="rotate(-1.4 250 120)" filter="url(#ink-edge)" opacity="0.88">
+    <g fill="none" stroke="#244a78">
+      <ellipse cx="250" cy="120" rx="232" ry="105" stroke-width="4.5"/>
+      <ellipse cx="250" cy="120" rx="221" ry="94" stroke-width="1.7"/>
+      <path d="M75 80h350M75 163h350" stroke-width="1.5"/>
+      <path d="M94 53h44m224 0h44M94 188h44m224 0h44" stroke-width="2"/>
+    </g>
+    <g fill="#244a78" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif">
+      <text x="250" y="72" font-size="17" font-weight="700" letter-spacing="4">APARTA SUITE</text>
+      <text x="250" y="134" font-size="39" font-weight="700" letter-spacing="2">LA FLORA</text>
+      <text x="250" y="185" font-size="14" letter-spacing="6">SANTIAGO DE CALI</text>
+    </g>
+    <g fill="#244a78">
+      <path d="M76 113c15-10 27-8 38 7-16 9-29 7-38-7Zm348 0c-15-10-27-8-38 7 16 9 29 7 38-7Z"/>
+      <circle cx="66" cy="120" r="3"/><circle cx="434" cy="120" r="3"/>
+    </g>
   </g>
-  <g fill="#285448" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif">
-    <text x="250" y="72" font-size="17" font-weight="700" letter-spacing="4">APARTA SUITE</text>
-    <text x="250" y="134" font-size="39" font-weight="700" letter-spacing="2">LA FLORA</text>
-    <text x="250" y="185" font-size="14" letter-spacing="6">SANTIAGO DE CALI</text>
-  </g>
-  <g fill="#285448">
-    <path d="M76 113c15-10 27-8 38 7-16 9-29 7-38-7Zm348 0c-15-10-27-8-38 7 16 9 29 7 38-7Z"/>
-    <circle cx="66" cy="120" r="3"/><circle cx="434" cy="120" r="3"/>
-  </g>
+  <rect x="16" y="14" width="468" height="212" fill="url(#dry-ink)" opacity="0.35"/>
 </svg>
