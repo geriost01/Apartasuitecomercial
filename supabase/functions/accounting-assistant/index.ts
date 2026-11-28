@@ -167,7 +167,7 @@ Deno.serve(async (request) => {
   if (!Array.isArray(body.messages) || body.messages.length < 1 || body.messages.length > 16) return out(400, { error: "La conversación excede el límite permitido." });
   const messages = body.messages.map((message: any) => ({
     role: message?.role === "assistant" ? "assistant" : "user",
-    content: typeof message?.content === "string" ? message.content.slice(0, 2000) : "",
+    content: typeof message?.content === "string" ? message.content.slice(0, 16000) : "",
   })).filter((message: any) => message.content);
   if (!messages.length || messages.at(-1).role !== "user") return out(400, { error: "Escribe una pregunta o novedad." });
 
